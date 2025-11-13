@@ -1,11 +1,11 @@
 import React from "react";
 import { Text, View, ScrollView, Button, TouchableOpacity } from "react-native";
 import { style } from "./style";
-import ScreenInfo from "../components/ScreenInfo";
+import ScreenInfo from "../../components/ScreenInfo";
 import { Ionicons } from "@expo/vector-icons";
-import { theme } from "../global/themes";
-import { scaleFont } from "../assets/utils/responsive";
-import FeedScreen from "../components/feed";
+import { theme } from "../../global/themes";
+import { scaleFont } from "../../assets/utils/responsive";
+import FeedScreen from "../../components/feed";
 import { Feather } from "@expo/vector-icons";
 import Entypo from '@expo/vector-icons/Entypo';
 import AntDesign from '@expo/vector-icons/AntDesign';

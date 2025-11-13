@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet } from "react-native";
-import { scaleWidth, scaleHeight, scaleFont } from "../assets/utils/responsive";
-import { theme } from "../global/themes";
+import { scaleWidth, scaleHeight, scaleFont } from "../../assets/utils/responsive";
+import { theme } from "../../global/themes";
 
 export const style = StyleSheet.create({
     container:{

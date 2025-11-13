@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Login from "../pages/login";
 import Cadastro from "../pages/cadastro";
-import TelaHome from "../TelaHome";
+import TelaHome from "../pages/TelaHome";
 
 
 export type RootStackParamList = {
