@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Dimensions, PixelRatio, StyleSheet } from "react-native";
+import Post from "../../models/Posts";
+
+const exemplo = new Post(
+  "1",
+  "Mailson",
+  "https://minhaimagem.com/foto.png",
+  "Primeiro post!",
+  3
+);
+
 
 export default function ScreenInfo() {
   const [screen, setScreen] = useState(() => Dimensions.get("window"));

@@ -9,7 +9,7 @@ import { Text,
   ScrollView,
   Platform,
   TouchableOpacity,
-  Alert
+  Alert,
 } from "react-native";
 import { style } from "./style";
 import Logo from "../../assets/logo.png";
@@ -21,6 +21,8 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes";
 import Cadastro from "../cadastro";
+import UserSession from "../../utils/UserSessions";
+UserSession
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -88,18 +90,17 @@ export default function Login() {
         <View style={style.boxBottom}>
           <Botao
             title="ENTRAR"
-            onPress={() => {
-              Alert.alert(
-                "Aproveite",
-                "nôs ajuda à ajudar o mundo",
-                [
-                  {
-                    text:"OK",
-                    onPress:() => navigation.navigate("TelaHome")
-                  },
-                ]
-              )
-            }}
+       onPress={() => {
+   const user = {
+     nome: "joão",
+     tipo: selectedValue,
+     ecoBeneficios: 200
+   };
+
+   UserSession.getInstance().setUser(user);
+
+   navigation.navigate("TelaHome");
+}}
           />
         </View>
 

@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from "react-native";
-import { scaleWidth, scaleHeight, scaleFont } from "../../assets/utils/responsive";
+import { scaleWidth, scaleHeight, scaleFont } from "../../utils/responsive";
 import { theme } from "../../global/themes";
 
 export const style = StyleSheet.create({
@@ -9,6 +9,7 @@ export const style = StyleSheet.create({
         backgroundColor:theme.colors.background
 
     },
+
     boxHeader:{
         backgroundColor:'#FFFFFF',
         height: scaleHeight(130),
@@ -24,66 +25,62 @@ export const style = StyleSheet.create({
         shadowColor:theme.colors.primaryDark,
         shadowOffset:{ width: 0, height:50 },
         shadowOpacity:0.9,
-        shadowRadius:50,
-        elevation:8
+        shadowRadius:50
+
     },
     Saudacao:{
         flexDirection:'row',
         justifyContent:'center',
         alignItems:'center',
-        gap: scaleWidth(9),
-        marginRight: scaleWidth(60),
+        gap: scaleWidth(10),
+        marginRight: scaleWidth(40),
+        marginTop:scaleHeight(30)
         
     },
     boxMid:{
-        //backgroundColor:'blue',
-        width: scaleWidth (468),
-        alignItems:'center',
-        justifyContent:'center',
-        gap: scaleWidth(17),
-        flexDirection:'row',
-        flex:1,
+        height:scaleHeight(),
+        width:"100%",
+        padding:8,
+        position:'absolute',
+        alignItems:'flex-end'
 
-    },
-    boxMidTroque:{
-        backgroundColor:theme.colors.primaryLight,
-        height: scaleHeight(140),
-        width: scaleWidth(120),
-        alignItems:'center',
-        justifyContent:'center',
-        borderRadius:20,
-        margin:0,
-        padding:0
+  
     },
     boxFeed:{
        // backgroundColor:'green',
-        height: scaleHeight(540),
+        height: scaleHeight(650),
         width: scaleWidth (412)
 
 
     },
     boxMenu:{
          backgroundColor:theme.colors.background,
-          height: scaleHeight(50),
+          height: scaleHeight(90),
         width: scaleWidth (412),
         marginBottom: scaleHeight(50),
         alignItems:'center',
+        justifyContent:'center',
         flexDirection:'row'
     },
     menuContainer:{
+        width:'100%',
+        height:'100%',        
         alignItems:'center',
         margin:5,
         flexDirection:'row',
         display:'flex',
         gap: scaleWidth(16),
-        alignContent:'center'
+        alignContent:'center',
+        justifyContent:'center'
     },
     button:{
     alignItems: "center",
     borderRadius: 30,
+    flex:1
   },
     icon:{
-        alignItems:'center'
+        alignItems:'center',
+     
     },
     menuLabel:{
         color: theme.colors.textDark,

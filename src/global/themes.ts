@@ -1,6 +1,7 @@
 import { ColorValue } from "react-native";
 import Background from "../components/Background";
 
+
 export const theme = {
   colors: {
     primaryLight: "#00B89A",
