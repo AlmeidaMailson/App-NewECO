@@ -25,7 +25,6 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import TroqueDoe from "../TroqueDoe";
 import UserSession from "../../utils/UserSessions";
 import { feedObserver } from "../../utils/FeedObserver";
-import ChatScreen from "../../components/ChatScreen";
 import { Video } from "expo-av";
 import FloatingButton from "../../components/FloatingButton";
 
@@ -104,7 +103,6 @@ export default function TelaHome() {
           />
         </View> */}
         <View>
-         <FloatingButton onPress={() => navigation.navigate("ChatScreen")} />
           
         </View>
 
@@ -140,6 +138,8 @@ export default function TelaHome() {
 
                     if (opcao.id === "1")
                       navigation.navigate("TroqueDoe", { opcao: opcao.id });
+                      else if (opcao.id ==="2")
+                        navigation.navigate("MapaVerde")
                   }}
                   style={{
                     backgroundColor:
@@ -168,7 +168,9 @@ export default function TelaHome() {
       </View>
       <View style={style.boxMenu}>
         <View style={style.menuContainer}>
-          <TouchableOpacity style={style.button}>
+          <TouchableOpacity style={style.button}
+          onPress={()=> navigation.navigate('TelaMensagem')}
+          >
             <AntDesign name="comment" size={30} color="black" />
           </TouchableOpacity>
 

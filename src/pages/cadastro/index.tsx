@@ -32,6 +32,7 @@ export default function Cadastro() {
             <Image source={Logo} style={style.logo} resizeMode="contain" />
           </View>
           <ScrollView
+            
             contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled"
           >

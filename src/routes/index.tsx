@@ -7,9 +7,11 @@ import Cadastro from "../pages/cadastro";
 import TelaHome from "../pages/TelaHome";
 import Publicar from "../pages/Publicar";
 import TroqueDoe from "../pages/TroqueDoe";
+import Mapaverde  from "../pages/MapaVerde";
 import FinalizarPublicacao from "../pages/FinalizarPublicacao";
-import ChatScreen from "../components/ChatScreen";
 import UserSession from "../utils/UserSessions";
+import TelaMensagem from "../pages/TelaMensagem";
+import Coversa from "../pages/Conversa";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -19,6 +21,9 @@ export type RootStackParamList = {
   TroqueDoe: { opcao: string };
   FinalizarPublicacao: { midia: any };
   ChatScreen: undefined;
+  TelaMensagem: undefined;
+  Conversa: undefined;
+  MapaVerde: undefined;
 };
 
 const stack = createNativeStackNavigator<RootStackParamList>();
@@ -32,12 +37,10 @@ export default function Routes() {
         <stack.Screen name="TelaHome" component={TelaHome} />
         <stack.Screen name="Publicar" component={Publicar} />
         <stack.Screen name="TroqueDoe" component={TroqueDoe} />
+         <stack.Screen name="MapaVerde" component={Mapaverde} />
         <stack.Screen name="FinalizarPublicacao" component={FinalizarPublicacao}/>
-        <stack.Screen name="ChatScreen">
-  {() => (
-    <ChatScreen currentUser={UserSession.getInstance().getUser()} />
-  )}
-</stack.Screen>
+        <stack.Screen name="TelaMensagem" component={TelaMensagem}/>
+        <stack.Screen name="Conversa" component={Coversa}/>
       </stack.Navigator>
     </NavigationContainer>
   );

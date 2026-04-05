@@ -22,6 +22,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes";
 import Cadastro from "../cadastro";
 import UserSession from "../../utils/UserSessions";
+import { scaleHeight } from "../../utils/responsive";
 UserSession
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Login'>;
@@ -39,7 +40,9 @@ export default function Login() {
       behavior={Platform.OS ==="ios" ? "padding" : "height"}
       >
         <ScrollView
-         contentContainerStyle={{ flexGrow: 1}}
+         contentContainerStyle={{ flexGrow: 1,
+         }}
+         showsHorizontalScrollIndicator={false}
          keyboardShouldPersistTaps="handled"
         >
          
@@ -59,17 +62,6 @@ export default function Login() {
 
         <View style={style.boxMid}>
           <View style={style.boxMidPicker}>
-            <Picker
-              style={style.boxPicker}
-              selectedValue={selectedValue}
-              onValueChange={(itemValue) => setSelectedValue(itemValue)}
-              selectionColor={theme.colors.button}
-            >
-              <Picker.Item label="SELECIONE O USUARIO" value="opcao1" />
-              <Picker.Item label="Opçao 2" value="opcoao2" />
-              <Picker.Item label="Opçao 3" value="opcoao3" />
-              <Picker.Item label="Opçao 4" value="opcoao4" />
-            </Picker>
           </View>
           <View style={style.boxIpunt}>
             <TextInput
@@ -86,6 +78,14 @@ export default function Login() {
             />
           </View>
         </View>
+           <View style={{
+            top: scaleHeight(15),
+            marginLeft: scaleHeight(120)
+           }}>
+            <TouchableOpacity onPress={()=>navigation.navigate("Cadastro")}>
+              <Text style={style.titletop}>Esqueceu senha</Text>
+            </TouchableOpacity>
+          </View>
 
         <View style={style.boxBottom}>
           <Botao
