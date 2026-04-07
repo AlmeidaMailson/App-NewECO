@@ -140,6 +140,8 @@ export default function TelaHome() {
                       navigation.navigate("TroqueDoe", { opcao: opcao.id });
                       else if (opcao.id ==="2")
                         navigation.navigate("MapaVerde")
+                      else (opcao.id==="3")
+                      navigation.navigate("TelaMissoes")
                   }}
                   style={{
                     backgroundColor:

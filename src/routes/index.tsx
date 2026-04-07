@@ -8,6 +8,7 @@ import TelaHome from "../pages/TelaHome";
 import Publicar from "../pages/Publicar";
 import TroqueDoe from "../pages/TroqueDoe";
 import Mapaverde  from "../pages/MapaVerde";
+import TelaMissoes from "../pages/TelaMissoes";
 import FinalizarPublicacao from "../pages/FinalizarPublicacao";
 import UserSession from "../utils/UserSessions";
 import TelaMensagem from "../pages/TelaMensagem";
@@ -19,6 +20,7 @@ export type RootStackParamList = {
   TelaHome: undefined;
   Publicar: undefined;
   TroqueDoe: { opcao: string };
+  TelaMissoes: undefined;
   FinalizarPublicacao: { midia: any };
   ChatScreen: undefined;
   TelaMensagem: undefined;
@@ -38,6 +40,7 @@ export default function Routes() {
         <stack.Screen name="Publicar" component={Publicar} />
         <stack.Screen name="TroqueDoe" component={TroqueDoe} />
          <stack.Screen name="MapaVerde" component={Mapaverde} />
+         <stack.Screen name="TelaMissoes" component={TelaMissoes}/>
         <stack.Screen name="FinalizarPublicacao" component={FinalizarPublicacao}/>
         <stack.Screen name="TelaMensagem" component={TelaMensagem}/>
         <stack.Screen name="Conversa" component={Coversa}/>
