@@ -4,5 +4,10 @@ import { theme } from "../../global/themes";
 
 export const style = StyleSheet.create({
 
-    
+      container: {
+    flex: 1,
+  },
+  map: {
+    flex: 1,
+  },
 })

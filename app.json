@@ -3,50 +3,31 @@
     "name": "NewEco",
     "slug": "NewEco",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+    "android": {
+      "package": "com.anonymous.NewEco",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyB_U6wfcObSRIZSWa4OrTbLe9vmby8VXno"
+        }
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO"
+      ]
     },
     "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.NewEco",
-      "permissions": [
-        "READ_MEDIA_IMAGES",
-        "READ_MEDIA_VIDEO",
-        "WRITE_EXTERNAL_STORAGE"
-      ]
+      "bundleIdentifier": "com.anonymous.NewEco",
+      "config": {
+        "googleMapsApiKey": "AIzaSyB_U6wfcObSRIZSWa4OrTbLe9vmby8VXno"
+      }
     },
     "plugins": [
       "expo-video",
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "Permita que o app acesse suas fotos para escolher imagens na publicação."
-        }
-      ],
-      "expo-audio"
-    ],
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "19220445-f971-4a31-9048-460084bfeb24"
-      }
-    },
-    "owner": "mailson12"
+      "expo-audio",
+      "expo-font",
+      "expo-asset"
+    ]
   }
 }

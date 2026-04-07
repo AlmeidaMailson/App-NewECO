@@ -27,16 +27,25 @@ import UserSession from "../../utils/UserSessions";
 import { feedObserver } from "../../utils/FeedObserver";
 import { Video } from "expo-av";
 import FloatingButton from "../../components/FloatingButton";
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
-  "TelaHome"
+  "MapaVerde"
 >;
 export default function Mapaverde(){
     return(
-        <View>
-            
-        </View>
 
+<View style={{ flex: 1 }}> 
+       <MapView 
+          style={{ flex: 1 }} 
+          initialRegion={{
+            latitude: -23.5505,
+            longitude: -46.6333,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+       />
+    </View>
     );
 }
