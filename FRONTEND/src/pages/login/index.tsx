@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes";
 import UserSession from "../../utils/UserSessions";
+import axios from "axios";
 
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -29,20 +30,39 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
+ async function login() {
+
+  try {
+
+    const response = await axios.post(
+      "http://localhost:8000/users/login",
+      {
+        email,
+        senha
+      }
+    );
+
+    console.log(response.data);
+
+    alert("Login realizado");
+    navigation.navigate("TelaHome");
+
+  } catch (error: any) {
+
+    console.log(error.response?.data);
+
+    alert("Email ou senha inválidos");
+  }
+}
+
+
   function handleLogin() {
     if (!email || !senha) {
       alert("Preencha todos os campos");
       return;
     }
 
-    const user = {
-      nome: "João",
-      tipo: "user",
-      ecoBeneficios: 200,
-    };
-
-    UserSession.getInstance().setUser(user);
-    navigation.navigate("TelaHome");
+    
   }
 
   return (
@@ -97,7 +117,7 @@ export default function Login() {
 
           {/* BOTÃO */}
           <View style={style.button}>
-            <Botao title="Entrar" onPress={handleLogin} />
+            <Botao title="Entrar" onPress={login} />
           </View>
         </ScrollView>
 
