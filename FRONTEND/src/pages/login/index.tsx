@@ -18,6 +18,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes";
 import UserSession from "../../utils/UserSessions";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -29,41 +31,40 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-
- async function login() {
-
+async function login() {
   try {
-
     const response = await axios.post(
       "http://localhost:8000/users/login",
-      {
-        email,
-        senha
-      }
+      { email, senha }
     );
 
-    console.log(response.data);
-
-    alert("Login realizado");
-    navigation.navigate("TelaHome");
-
-  } catch (error: any) {
-
-    console.log(error.response?.data);
-
-    alert("Email ou senha inválidos");
-  }
-}
-
-
-  function handleLogin() {
-    if (!email || !senha) {
-      alert("Preencha todos os campos");
+    if (!response.data) {
+      alert("Erro no login");
       return;
     }
 
-    
+    console.log("LOGIN OK:", response.data);
+
+    await AsyncStorage.setItem(
+      "user",
+      JSON.stringify(response.data)
+    );
+
+    navigation.replace("TelaHome"); // 🔥 melhor que navigate
+
+  } catch (error: any) {
+    console.log(error.response?.data || error.message);
+    alert("Email ou senha inválidos");
   }
+}
+  async function handleLogin() {
+  if (!email || !senha) {
+    alert("Preencha todos os campos");
+    return;
+  }
+
+  await login();
+}
 
   return (
     <Background>
@@ -117,7 +118,7 @@ export default function Login() {
 
           {/* BOTÃO */}
           <View style={style.button}>
-            <Botao title="Entrar" onPress={login} />
+            <Botao title="Entrar" onPress={handleLogin} />
           </View>
         </ScrollView>
 

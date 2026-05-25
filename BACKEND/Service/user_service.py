@@ -20,7 +20,7 @@ async def create_user(db, user):
     return create_user_repository(db, user)
 
 # login
-async def login_user(db, email, senha):
+def login_user(db, email, senha):
 
     user = db.query(User).filter(
         User.email == email

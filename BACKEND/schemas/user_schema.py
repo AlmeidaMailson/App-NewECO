@@ -26,3 +26,10 @@ class UserResponse(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     senha: str
+
+class UserLoginResponse(BaseModel):
+    id: int
+    nome: str
+    email: str
+    class Config:
+        from_attributes = True
