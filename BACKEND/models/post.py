@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, TIMESTAMP
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-
 from app.database import Base
 
 
@@ -33,16 +32,26 @@ class Post(Base):
 
     usuario = relationship("User", back_populates="posts")
 
-    #sera implementado futuramente
+    curtidas = relationship(
+        "CurtidaPost",
+        back_populates="post",
+        cascade="all, delete"
+    )
 
-    # curtidas = relationship(
-    #     "Curtida",
-    #     back_populates="post",
-    #     cascade="all, delete"
-    # )
+    comentarios = relationship(
+        "ComentarioPost",
+        back_populates="post",
+        cascade="all, delete"
+    )
 
-    # comentarios = relationship(
-    #     "Comentario",
-    #     back_populates="post",
-    #     cascade="all, delete"
-    # )
+    salvos = relationship(
+        "PostSalvo",
+        back_populates="post",
+        cascade="all, delete"
+    )
+
+    compartilhamentos = relationship(
+        "CompartilhamentoPost",
+        back_populates="post",
+        cascade="all, delete"
+    )

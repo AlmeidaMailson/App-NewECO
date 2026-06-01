@@ -9,49 +9,40 @@ import {
   Modal,
   TextInput,
   FlatList,
+  Alert,
+  Share,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { theme } from "../../global/themes";
+import { API_URL } from "../../config/api";
 
 const { width } = Dimensions.get("window");
 
-const shareOptions = [
-  { id: "1", label: "Enviar no chat", icon: "chatbubble-ellipses-outline" },
-  { id: "2", label: "Copiar link", icon: "link-outline" },
-  { id: "3", label: "Compartilhar fora do app", icon: "share-social-outline" },
-  { id: "4", label: "Salvar publicação", icon: "bookmark-outline" },
-];
-
-export default function PostCard({ post, isLiked, onLike }: any) {
+export default function PostCard({ post, loggedUser, onChanged }: any) {
   const navigation = useNavigation<any>();
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [shareModalVisible, setShareModalVisible] = useState(false);
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState([
-    {
-      id: "1",
-      user: "Ana Recicla",
-      text: "Ficou ótimo! Vou tentar fazer em casa.",
-    },
-    {
-      id: "2",
-      user: "Coleta Verde",
-      text: "Ideia perfeita para reduzir descarte.",
-    },
-  ]);
+  const [isLiked, setIsLiked] = useState(Boolean(post.curtido));
+  const [likesCount, setLikesCount] = useState(post.curtidas_count ?? 0);
+  const [isSaved, setIsSaved] = useState(Boolean(post.salvo));
+  const [shareCount, setShareCount] = useState(post.compartilhamentos_count ?? 0);
+  const [comments, setComments] = useState(post.comentarios ?? []);
+  const [isFollowingAuthor, setIsFollowingAuthor] = useState(Boolean(post.seguindo_autor));
+  const mediaUrl = post.midia_url?.startsWith("http")
+    ? post.midia_url
+    : `${API_URL}/${post.midia_url}`;
+  const isOwner = Number(loggedUser?.id) === Number(post.usuario_id);
 
-  const profile = post.profile ?? {
-    name: post.user,
-    username: `@${post.user}`,
-    avatar: "https://i.pravatar.cc/150?img=" + post.id,
-    followers: 120,
-    following: 44,
+  const profile = {
+    ...post.usuario,
     posts: [
       {
-        id: String(post.id),
-        image: post.image,
-        caption: post.caption,
+        id: post.id,
+        image: mediaUrl,
+        caption: post.legenda ?? post.titulo ?? "",
       },
     ],
   };
@@ -60,40 +51,200 @@ export default function PostCard({ post, isLiked, onLike }: any) {
     navigation.navigate("TelaPerfilUsuario", { user: profile });
   };
 
-  const addComment = () => {
+  const toggleLike = async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/posts/${post.id}/curtir`,
+        null,
+        {
+          params: {
+            usuario_id: loggedUser.id
+          }
+        }
+      );
+
+      setIsLiked(response.data.curtido);
+      setLikesCount(response.data.curtidas_count);
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+      Alert.alert("Erro", "Nao foi possivel curtir o post.");
+    }
+  };
+
+  const addComment = async () => {
     const trimmed = commentText.trim();
 
     if (!trimmed) {
       return;
     }
 
-    setComments((current) => [
-      ...current,
-      {
-        id: String(Date.now()),
-        user: "Você",
-        text: trimmed,
-      },
-    ]);
-    setCommentText("");
+    try {
+      const response = await axios.post(
+        `${API_URL}/posts/${post.id}/comentarios`,
+        {
+          texto: trimmed
+        },
+        {
+          params: {
+            usuario_id: loggedUser.id
+          }
+        }
+      );
+
+      setComments((current: any[]) => [...current, response.data]);
+      setCommentText("");
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+      Alert.alert("Erro", "Nao foi possivel comentar.");
+    }
+  };
+
+  const toggleSave = async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/posts/${post.id}/salvar`,
+        null,
+        {
+          params: {
+            usuario_id: loggedUser.id
+          }
+        }
+      );
+
+      setIsSaved(response.data.salvo);
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+      Alert.alert("Erro", "Nao foi possivel salvar o post.");
+    }
+  };
+
+  const sharePost = async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/posts/${post.id}/compartilhar`,
+        null,
+        {
+          params: {
+            usuario_id: loggedUser.id
+          }
+        }
+      );
+
+      setShareCount(response.data.compartilhamentos_count);
+      setShareModalVisible(false);
+
+      await Share.share({
+        message: `${post.titulo ?? "Post NewEco"}\n${post.legenda ?? ""}\n${mediaUrl}`,
+      });
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+      Alert.alert("Erro", "Nao foi possivel compartilhar.");
+    }
+  };
+
+  const toggleFollowAuthor = async () => {
+    try {
+      if (isFollowingAuthor) {
+        await axios.delete(`${API_URL}/seguidores/${post.usuario_id}`, {
+          params: {
+            usuario_id: loggedUser.id
+          }
+        });
+
+        setIsFollowingAuthor(false);
+        onChanged?.();
+        return;
+      }
+
+      await axios.post(
+        `${API_URL}/seguidores/`,
+        {
+          seguidor_id: loggedUser.id,
+          seguindo_id: post.usuario_id
+        },
+        {
+          params: {
+            usuario_id: loggedUser.id
+          }
+        }
+      );
+
+      setIsFollowingAuthor(true);
+      onChanged?.();
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+      Alert.alert("Erro", error.response?.data?.detail ?? "Nao foi possivel atualizar seguidor.");
+    }
+  };
+
+  const deletePost = () => {
+    Alert.alert(
+      "Excluir post",
+      "Tem certeza que deseja excluir esta publicacao?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await axios.delete(`${API_URL}/posts/${post.id}`, {
+                params: {
+                  usuario_id: loggedUser.id
+                }
+              });
+
+              onChanged?.();
+            } catch (error: any) {
+              console.log(error.response?.data || error.message);
+              Alert.alert("Erro", "Nao foi possivel excluir o post.");
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
     <View style={styles.card}>
-      <TouchableOpacity style={styles.header} onPress={openProfile}>
-        <Image source={{ uri: profile.avatar }} style={styles.avatar} />
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.profileArea} onPress={openProfile}>
+          <Image
+            source={{ uri: profile.avatar_url ?? `https://i.pravatar.cc/150?u=${profile.id}` }}
+            style={styles.avatar}
+          />
 
-        <View>
-          <Text style={styles.username}>{profile.username}</Text>
-          <Text style={styles.subtitle}>Toque para ver o perfil</Text>
+          <View>
+            <Text style={styles.username}>{profile.nome}</Text>
+            <Text style={styles.subtitle}>Toque para ver o perfil</Text>
+          </View>
+        </TouchableOpacity>
+
+        {!isOwner && !isFollowingAuthor && (
+          <TouchableOpacity style={styles.followSmallButton} onPress={toggleFollowAuthor}>
+            <Text style={styles.followSmallText}>Seguir</Text>
+          </TouchableOpacity>
+        )}
+
+        {isOwner && (
+          <TouchableOpacity onPress={deletePost}>
+            <Ionicons name="trash-outline" size={22} color={theme.colors.primaryDark} />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {post.tipo_midia === "imagem" ? (
+        <Image source={{ uri: mediaUrl }} style={styles.image} />
+      ) : (
+        <View style={styles.mediaPlaceholder}>
+          <Ionicons name="play-circle-outline" size={42} color={theme.colors.primaryDark} />
+          <Text style={styles.mediaPlaceholderText}>Midia publicada</Text>
         </View>
-      </TouchableOpacity>
-
-      <Image source={{ uri: post.image }} style={styles.image} />
+      )}
 
       <View style={styles.actions}>
         <View style={styles.left}>
-          <TouchableOpacity onPress={onLike}>
+          <TouchableOpacity onPress={toggleLike}>
             <Ionicons
               name={isLiked ? "heart" : "heart-outline"}
               size={26}
@@ -118,24 +269,25 @@ export default function PostCard({ post, isLiked, onLike }: any) {
           </TouchableOpacity>
         </View>
 
-        <Ionicons
-          name="bookmark-outline"
-          size={24}
-          color={theme.colors.primaryDark}
-        />
+        <TouchableOpacity onPress={toggleSave}>
+          <Ionicons
+            name={isSaved ? "bookmark" : "bookmark-outline"}
+            size={24}
+            color={theme.colors.primaryDark}
+          />
+        </TouchableOpacity>
       </View>
 
-      <Text style={styles.likes}>
-        {isLiked ? post.likes + 1 : post.likes} curtidas
-      </Text>
+      <Text style={styles.likes}>{likesCount} curtidas</Text>
+      <Text style={styles.shareCount}>{shareCount} compartilhamentos</Text>
 
       <Text style={styles.caption}>
-        <Text style={styles.username}>{profile.username} </Text>
-        {post.caption}
+        <Text style={styles.username}>{profile.nome} </Text>
+        {post.legenda ?? post.titulo}
       </Text>
 
       <TouchableOpacity onPress={() => setCommentModalVisible(true)}>
-        <Text style={styles.comments}>Ver todos os comentários</Text>
+        <Text style={styles.comments}>Ver {comments.length} comentarios</Text>
       </TouchableOpacity>
 
       <Modal
@@ -147,7 +299,7 @@ export default function PostCard({ post, isLiked, onLike }: any) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Comentários</Text>
+              <Text style={styles.modalTitle}>Comentarios</Text>
               <TouchableOpacity onPress={() => setCommentModalVisible(false)}>
                 <Ionicons name="close" size={24} color={theme.colors.primaryDark} />
               </TouchableOpacity>
@@ -155,19 +307,22 @@ export default function PostCard({ post, isLiked, onLike }: any) {
 
             <FlatList
               data={comments}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => String(item.id)}
               style={styles.commentList}
+              ListEmptyComponent={
+                <Text style={styles.emptyComment}>Nenhum comentario ainda.</Text>
+              }
               renderItem={({ item }) => (
                 <View style={styles.commentItem}>
-                  <Text style={styles.commentUser}>{item.user}</Text>
-                  <Text style={styles.commentText}>{item.text}</Text>
+                  <Text style={styles.commentUser}>{item.usuario_nome ?? "Usuario"}</Text>
+                  <Text style={styles.commentText}>{item.texto}</Text>
                 </View>
               )}
             />
 
             <View style={styles.commentInputRow}>
               <TextInput
-                placeholder="Escreva um comentário..."
+                placeholder="Escreva um comentario..."
                 placeholderTextColor="#777"
                 style={styles.commentInput}
                 value={commentText}
@@ -196,22 +351,21 @@ export default function PostCard({ post, isLiked, onLike }: any) {
               </TouchableOpacity>
             </View>
 
-            {shareOptions.map((option) => (
-              <TouchableOpacity
-                key={option.id}
-                style={styles.shareOption}
-                onPress={() => setShareModalVisible(false)}
-              >
-                <View style={styles.shareIconBox}>
-                  <Ionicons
-                    name={option.icon as any}
-                    size={22}
-                    color={theme.colors.primaryDark}
-                  />
-                </View>
-                <Text style={styles.shareOptionText}>{option.label}</Text>
-              </TouchableOpacity>
-            ))}
+            <TouchableOpacity style={styles.shareOption} onPress={sharePost}>
+              <View style={styles.shareIconBox}>
+                <Ionicons name="share-social-outline" size={22} color={theme.colors.primaryDark} />
+              </View>
+              <Text style={styles.shareOptionText}>Compartilhar fora do app</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.shareOption} onPress={toggleSave}>
+              <View style={styles.shareIconBox}>
+                <Ionicons name="bookmark-outline" size={22} color={theme.colors.primaryDark} />
+              </View>
+              <Text style={styles.shareOptionText}>
+                {isSaved ? "Remover dos salvos" : "Salvar publicacao"}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -229,7 +383,13 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     padding: 12,
+  },
+  profileArea: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
   },
   avatar: {
     width: 45,
@@ -246,9 +406,31 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: 12,
   },
+  followSmallButton: {
+    backgroundColor: theme.colors.primaryLight,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  followSmallText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
   image: {
     width,
     height: width,
+  },
+  mediaPlaceholder: {
+    width,
+    height: width,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#eef3f1",
+  },
+  mediaPlaceholderText: {
+    color: theme.colors.primaryDark,
+    fontWeight: "bold",
+    marginTop: 8,
   },
   actions: {
     flexDirection: "row",
@@ -263,6 +445,11 @@ const styles = StyleSheet.create({
     color: theme.colors.textDark,
     fontWeight: "bold",
     paddingHorizontal: 12,
+  },
+  shareCount: {
+    color: "#666",
+    paddingHorizontal: 12,
+    marginTop: 2,
   },
   caption: {
     color: theme.colors.textDark,
@@ -321,6 +508,11 @@ const styles = StyleSheet.create({
     color: theme.colors.textDark,
     marginTop: 4,
     lineHeight: 20,
+  },
+  emptyComment: {
+    color: "#666",
+    paddingVertical: 16,
+    textAlign: "center",
   },
   commentInputRow: {
     flexDirection: "row",

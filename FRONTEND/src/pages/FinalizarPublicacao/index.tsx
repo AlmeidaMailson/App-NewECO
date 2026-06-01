@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from "react-native";
 import { Video, ResizeMode } from "expo-av";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -16,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { style } from "./style";
 import { feedObserver } from "../../utils/FeedObserver";
+import { API_URL } from "../../config/api";
 
 export default function FinalizarPublicacao() {
   const navigation = useNavigation<any>();
@@ -36,8 +38,9 @@ export default function FinalizarPublicacao() {
 
         if (data) {
           const parsed = JSON.parse(data);
-          setUser(parsed);
-          console.log("USER LOGADO:", parsed);
+          const loggedUser = parsed?.user ?? parsed;
+          setUser(loggedUser);
+          console.log("USER LOGADO:", loggedUser);
         } else {
           console.log("Nenhum usuário logado");
         }
@@ -67,7 +70,7 @@ export default function FinalizarPublicacao() {
       formData.append("titulo", titulo);
       formData.append("legenda", caption);
 
-      formData.append("midia", {
+      formData.append("midia_url", {
         uri: midia.uri,
         name: midia.mediaType === "video" ? "video.mp4" : "post.jpg",
         type: midia.mediaType === "video" ? "video/mp4" : "image/jpeg",
@@ -75,7 +78,7 @@ export default function FinalizarPublicacao() {
 
       console.log("USER ID:", user?.id);
       const response = await fetch(
-        "http://192.168.0.10:8000/posts/",
+        `${API_URL}/posts/`,
         {
           method: "POST",
           body: formData,
@@ -86,6 +89,11 @@ export default function FinalizarPublicacao() {
 
       console.log("STATUS:", response.status);
       console.log("RESPOSTA:", data);
+
+      if (!response.ok) {
+        Alert.alert("Erro ao publicar", data?.detail ?? "Nao foi possivel salvar o post.");
+        return;
+      }
 
       feedObserver.notify();
       navigation.navigate("TelaHome");

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -8,10 +8,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes";
 import { theme } from "../../global/themes";
+import { API_URL } from "../../config/api";
 import { styles } from "./style";
 
 type NavigationProps = NativeStackNavigationProp<
@@ -21,141 +24,195 @@ type NavigationProps = NativeStackNavigationProp<
 
 type Filter = "todos" | "seguir" | "conversar";
 
-const users = [
-  {
-    id: "1",
-    name: "Ana Recicla",
-    username: "@anarecicla",
-    bio: "Compartilha ideias de reaproveitamento e descarte correto.",
-    avatar: "https://i.pravatar.cc/150?img=14",
-    followers: 328,
-    following: 91,
-    interests: ["Reciclagem", "Educação ambiental"],
-    posts: [
-      {
-        id: "1",
-        image:
-          "https://dicasmaonamassa.com.br/wp-content/uploads/2024/04/vasos-de-garrafa-pet-bichinhos-scaled.jpg",
-        caption: "Transformando garrafas PET em vasos para casa.",
-      },
-    ],
-  },
-  {
-    id: "2",
-    name: "Coleta Verde",
-    username: "@coletaverde",
-    bio: "Organiza pontos de coleta e ações sustentáveis no bairro.",
-    avatar: "https://i.pravatar.cc/150?img=8",
-    followers: 512,
-    following: 126,
-    interests: ["Coleta seletiva", "Comunidade"],
-    posts: [
-      {
-        id: "1",
-        image: "https://consed.org.br/storage/news/txlgf5cjybyj99x9cpxoitpwyyxsvv.jpeg",
-        caption: "Mutirão de coleta seletiva com a comunidade.",
-      },
-    ],
-  },
-  {
-    id: "3",
-    name: "Lucas Horta",
-    username: "@lucashorta",
-    bio: "Cultiva horta urbana e troca dicas de compostagem.",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    followers: 214,
-    following: 74,
-    interests: ["Horta", "Compostagem"],
-    posts: [
-      {
-        id: "1",
-        image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=900",
-        caption: "Compostagem simples para horta urbana.",
-      },
-    ],
-  },
-  {
-    id: "4",
-    name: "Marina Eco",
-    username: "@marinaeco",
-    bio: "Cria desafios de baixo lixo e consumo consciente.",
-    avatar: "https://i.pravatar.cc/150?img=9",
-    followers: 447,
-    following: 108,
-    interests: ["Consumo consciente", "Missões"],
-    posts: [
-      {
-        id: "1",
-        image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=900",
-        caption: "Semana de baixo lixo: pequenos hábitos, grande impacto.",
-      },
-    ],
-  },
-];
+type BackendUser = {
+  id: number;
+  nome: string;
+  email: string;
+  telefone?: string;
+  estado?: string;
+  cidade?: string;
+  bio?: string | null;
+  avatar_url?: string | null;
+  eco_beneficios?: number;
+};
 
 export default function TelaAdicionarUsuario() {
   const navigation = useNavigation<NavigationProps>();
+  const [users, setUsers] = useState<BackendUser[]>([]);
+  const [loggedUserId, setLoggedUserId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("todos");
   const [following, setFollowing] = useState<string[]>([]);
+  const [loadingFollowIds, setLoadingFollowIds] = useState<string[]>([]);
   const [chatOnly, setChatOnly] = useState<string[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+
+  useEffect(() => {
+    async function loadUsers() {
+      try {
+        const storedUser = await AsyncStorage.getItem("user");
+        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+        const usuarioId = parsedUser?.id ? Number(parsedUser.id) : null;
+
+        setLoggedUserId(usuarioId);
+
+        const response = await axios.get(`${API_URL}/users/`);
+        const databaseUsers: BackendUser[] = response.data ?? [];
+        const usersWithoutLoggedUser = usuarioId
+          ? databaseUsers.filter((user) => Number(user.id) !== usuarioId)
+          : databaseUsers;
+
+        setUsers(usersWithoutLoggedUser);
+
+        if (usuarioId) {
+          const statusResponses = await Promise.all(
+            usersWithoutLoggedUser.map(async (user) => {
+              try {
+                const status = await axios.get(
+                  `${API_URL}/seguidores/${user.id}/status`,
+                  {
+                    params: {
+                      usuario_id: usuarioId
+                    }
+                  }
+                );
+
+                return status.data.following ? String(user.id) : null;
+              } catch {
+                return null;
+              }
+            })
+          );
+
+          setFollowing(
+            statusResponses.filter((id): id is string => id !== null)
+          );
+        }
+      } catch (error: any) {
+        console.log(error.response?.data || error.message);
+        alert("Erro ao carregar usuarios do banco");
+      } finally {
+        setLoadingUsers(false);
+      }
+    }
+
+    loadUsers();
+  }, []);
 
   const filteredUsers = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
     return users.filter((user) => {
       const matchesSearch =
-        user.name.toLowerCase().includes(normalizedSearch) ||
-        user.username.toLowerCase().includes(normalizedSearch) ||
-        user.interests.some((interest) =>
-          interest.toLowerCase().includes(normalizedSearch)
-        );
+        user.nome.toLowerCase().includes(normalizedSearch) ||
+        user.email.toLowerCase().includes(normalizedSearch) ||
+        (user.cidade ?? "").toLowerCase().includes(normalizedSearch) ||
+        (user.estado ?? "").toLowerCase().includes(normalizedSearch);
 
       if (!matchesSearch) {
         return false;
       }
 
       if (filter === "seguir") {
-        return !following.includes(user.id);
+        return !following.includes(String(user.id));
       }
 
       if (filter === "conversar") {
-        return !chatOnly.includes(user.id);
+        return !chatOnly.includes(String(user.id));
       }
 
       return true;
     });
-  }, [chatOnly, filter, following, search]);
+  }, [chatOnly, filter, following, search, users]);
 
-  const toggleFollow = (id: string) => {
-    setFollowing((current) =>
-      current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
-    );
+  const toggleFollow = async (id: number) => {
+    if (!loggedUserId) {
+      alert("Faca login para seguir usuarios");
+      return;
+    }
+
+    const userId = String(id);
+
+    if (loadingFollowIds.includes(userId)) {
+      return;
+    }
+
+    try {
+      setLoadingFollowIds((current) => [...current, userId]);
+
+      if (following.includes(userId)) {
+        await axios.delete(`${API_URL}/seguidores/${id}`, {
+          params: {
+            usuario_id: loggedUserId
+          }
+        });
+
+        setFollowing((current) => current.filter((item) => item !== userId));
+        return;
+      }
+
+      await axios.post(
+        `${API_URL}/seguidores/`,
+        {
+          seguidor_id: loggedUserId,
+          seguindo_id: id
+        },
+        {
+          params: {
+            usuario_id: loggedUserId
+          }
+        }
+      );
+
+      setFollowing((current) =>
+        current.includes(userId) ? current : [...current, userId]
+      );
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+
+      if (error.response?.status === 409) {
+        setFollowing((current) =>
+          current.includes(userId) ? current : [...current, userId]
+        );
+        return;
+      }
+
+      alert(error.response?.data?.detail ?? "Erro ao atualizar seguidor");
+    } finally {
+      setLoadingFollowIds((current) => current.filter((item) => item !== userId));
+    }
   };
 
-  const startChat = (id: string) => {
-    setChatOnly((current) => (current.includes(id) ? current : [...current, id]));
+  const startChat = (id: number) => {
+    const userId = String(id);
+
+    setChatOnly((current) => (current.includes(userId) ? current : [...current, userId]));
     navigation.navigate("Conversa");
   };
 
-  const openProfile = (user: (typeof users)[number]) => {
+  const openProfile = (user: BackendUser) => {
     navigation.navigate("TelaPerfilUsuario", { user });
   };
 
-  const renderUser = ({ item }: { item: (typeof users)[number] }) => {
-    const isFollowing = following.includes(item.id);
-    const hasChat = chatOnly.includes(item.id);
+  const renderUser = ({ item }: { item: BackendUser }) => {
+    const userId = String(item.id);
+    const isFollowing = following.includes(userId);
+    const hasChat = chatOnly.includes(userId);
+    const isLoadingFollow = loadingFollowIds.includes(userId);
 
     return (
       <View style={styles.userCard}>
         <TouchableOpacity onPress={() => openProfile(item)}>
-          <Image source={{ uri: item.avatar }} style={styles.avatar} />
+          <Image
+            source={{ uri: item.avatar_url ?? `https://i.pravatar.cc/150?u=${item.id}` }}
+            style={styles.avatar}
+          />
         </TouchableOpacity>
 
         <View style={styles.userInfo}>
           <TouchableOpacity onPress={() => openProfile(item)}>
             <View style={styles.nameRow}>
-              <Text style={styles.name}>{item.name}</Text>
+              <Text style={styles.name}>{item.nome}</Text>
               {isFollowing && hasChat && (
                 <View style={styles.statusBadge}>
                   <Text style={styles.statusBadgeText}>Ambos</Text>
@@ -163,27 +220,24 @@ export default function TelaAdicionarUsuario() {
               )}
             </View>
 
-            <Text style={styles.username}>{item.username}</Text>
-            <Text style={styles.bio}>{item.bio}</Text>
+            <Text style={styles.username}>{item.email}</Text>
+            <Text style={styles.bio}>
+              {item.bio ?? `${item.cidade ?? "Cidade"} - ${item.estado ?? "UF"}`}
+            </Text>
           </TouchableOpacity>
 
           <View style={styles.metaRow}>
-            <Ionicons name="people-outline" size={15} color={theme.colors.primaryDark} />
-            <Text style={styles.metaText}>{item.followers} seguidores</Text>
-          </View>
-
-          <View style={styles.tags}>
-            {item.interests.map((interest) => (
-              <View key={interest} style={styles.tag}>
-                <Text style={styles.tagText}>{interest}</Text>
-              </View>
-            ))}
+            <Ionicons name="leaf-outline" size={15} color={theme.colors.primaryDark} />
+            <Text style={styles.metaText}>
+              {item.eco_beneficios ?? 0} eco beneficios
+            </Text>
           </View>
 
           <View style={styles.actions}>
             <TouchableOpacity
               style={[styles.followButton, isFollowing && styles.followingButton]}
               onPress={() => toggleFollow(item.id)}
+              disabled={isLoadingFollow}
             >
               <Ionicons
                 name={isFollowing ? "checkmark" : "person-add-outline"}
@@ -230,14 +284,14 @@ export default function TelaAdicionarUsuario() {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Adicionar usuários</Text>
+        <Text style={styles.headerTitle}>Adicionar usuarios</Text>
         <View style={styles.iconButton} />
       </View>
 
       <View style={styles.searchArea}>
         <View style={styles.searchBox}>
           <TextInput
-            placeholder="Buscar por nome, @usuário ou interesse"
+            placeholder="Buscar por nome, email, cidade ou estado"
             placeholderTextColor="#777"
             style={styles.searchInput}
             value={search}
@@ -268,14 +322,16 @@ export default function TelaAdicionarUsuario() {
 
       <FlatList
         data={filteredUsers}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={renderUser}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="search-outline" size={34} color={theme.colors.primaryLight} />
-            <Text style={styles.emptyText}>Nenhum usuário encontrado.</Text>
+            <Text style={styles.emptyText}>
+              {loadingUsers ? "Carregando usuarios..." : "Nenhum usuario encontrado."}
+            </Text>
           </View>
         }
       />

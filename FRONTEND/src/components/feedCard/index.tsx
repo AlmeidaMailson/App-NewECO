@@ -1,70 +1,60 @@
-import React, { useState } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { View, FlatList, StyleSheet, Text, ActivityIndicator } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import { theme } from "../../global/themes";
+import { API_URL } from "../../config/api";
+import { feedObserver } from "../../utils/FeedObserver";
 import PostCard from "../PostCard";
 
 export default function FeedScreen() {
-  const [likedPosts, setLikedPosts] = useState<number[]>([]);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loggedUser, setLoggedUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const posts = [
-    {
-      id: 1,
-      user: "Maria_user",
-      image:
-        "https://dicasmaonamassa.com.br/wp-content/uploads/2024/04/vasos-de-garrafa-pet-bichinhos-scaled.jpg",
-      caption: "Fazendo vasos de garrafa PET",
-      likes: 120,
-      profile: {
-        id: "feed-1",
-        name: "Maria User",
-        username: "@Maria_user",
-        avatar: "https://i.pravatar.cc/150?img=1",
-        bio: "Crio ideias simples de reaproveitamento para o dia a dia.",
-        followers: 682,
-        following: 144,
-        posts: [
-          {
-            id: "1",
-            image:
-              "https://dicasmaonamassa.com.br/wp-content/uploads/2024/04/vasos-de-garrafa-pet-bichinhos-scaled.jpg",
-            caption: "Fazendo vasos de garrafa PET.",
-          },
-        ],
-      },
-    },
-    {
-      id: 2,
-      user: "ONG",
-      image:
-        "https://consed.org.br/storage/news/txlgf5cjybyj99x9cpxoitpwyyxsvv.jpeg",
-      caption: "Ensinando reciclagem para crianças",
-      likes: 245,
-      profile: {
-        id: "feed-2",
-        name: "ONG Verde",
-        username: "@ONG",
-        avatar: "https://i.pravatar.cc/150?img=2",
-        bio: "Educação ambiental, reciclagem e ações comunitárias.",
-        followers: 1240,
-        following: 238,
-        posts: [
-          {
-            id: "1",
-            image: "https://consed.org.br/storage/news/txlgf5cjybyj99x9cpxoitpwyyxsvv.jpeg",
-            caption: "Ensinando reciclagem para crianças.",
-          },
-        ],
-      },
-    },
-  ];
+  const loadFeed = useCallback(async () => {
+    try {
+      const storedUser = await AsyncStorage.getItem("user");
+      const user = storedUser ? JSON.parse(storedUser) : null;
 
-  const toggleLike = (postId: number) => {
-    setLikedPosts((prev) =>
-      prev.includes(postId)
-        ? prev.filter((id) => id !== postId)
-        : [...prev, postId]
+      if (!user?.id) {
+        setPosts([]);
+        return;
+      }
+
+      setLoggedUser(user);
+
+      const response = await axios.get(`${API_URL}/posts/feed`, {
+        params: {
+          usuario_id: user.id
+        }
+      });
+
+      setPosts(response.data ?? []);
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadFeed();
+    feedObserver.subscribe(loadFeed);
+
+    return () => {
+      feedObserver.unsubscribe(loadFeed);
+    };
+  }, [loadFeed]);
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator color={theme.colors.primaryLight} />
+        <Text style={styles.centerText}>Carregando feed...</Text>
+      </View>
     );
-  };
+  }
 
   return (
     <View style={styles.container}>
@@ -72,11 +62,18 @@ export default function FeedScreen() {
         data={posts}
         keyExtractor={(item) => String(item.id)}
         showsVerticalScrollIndicator={false}
+        onRefresh={loadFeed}
+        refreshing={loading}
+        ListEmptyComponent={
+          <View style={styles.center}>
+            <Text style={styles.centerText}>Nenhuma publicacao encontrada.</Text>
+          </View>
+        }
         renderItem={({ item }) => (
           <PostCard
             post={item}
-            isLiked={likedPosts.includes(item.id)}
-            onLike={() => toggleLike(item.id)}
+            loggedUser={loggedUser}
+            onChanged={loadFeed}
           />
         )}
       />
@@ -89,5 +86,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
     paddingTop: 10,
+  },
+  center: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 30,
+  },
+  centerText: {
+    color: "#666",
+    fontWeight: "600",
+    marginTop: 8,
   },
 });

@@ -19,6 +19,7 @@ import { RootStackParamList } from "../../routes";
 import UserSession from "../../utils/UserSessions";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL } from "../../config/api";
 
 
 type NavigationProps = NativeStackNavigationProp<
@@ -34,7 +35,7 @@ export default function Login() {
 async function login() {
   try {
     const response = await axios.post(
-      "http://localhost:8000/users/login",
+      `${API_URL}/users/login`,
       { email, senha }
     );
 
@@ -45,10 +46,14 @@ async function login() {
 
     console.log("LOGIN OK:", response.data);
 
+    const loggedUser = response.data.user;
+
     await AsyncStorage.setItem(
       "user",
-      JSON.stringify(response.data)
+      JSON.stringify(loggedUser)
     );
+
+    UserSession.getInstance().setUser(loggedUser);
 
     navigation.replace("TelaHome"); // 🔥 melhor que navigate
 

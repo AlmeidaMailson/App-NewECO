@@ -155,4 +155,16 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
     padding: 14,
   },
+  emptyPosts: {
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#edf1ef",
+    padding: 18,
+  },
+  emptyPostsText: {
+    color: "#666",
+    fontWeight: "600",
+  },
 });

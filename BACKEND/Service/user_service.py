@@ -9,7 +9,7 @@ pwd_context = CryptContext(
 )
 
 # cadastro
-async def create_user(db, user):
+def create_user(db, user):
 
     senha_hash = pwd_context.hash(
         user.senha

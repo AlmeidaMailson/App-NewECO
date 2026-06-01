@@ -17,6 +17,9 @@ class UserResponse(BaseModel):
     telefone: str
     estado: str
     cidade: str
+    bio: str | None = None
+    avatar_url: str | None = None
+    eco_beneficios: int
 
     class Config:
         from_attributes = True
