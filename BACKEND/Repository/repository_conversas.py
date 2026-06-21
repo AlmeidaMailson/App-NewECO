@@ -32,10 +32,10 @@ def get_conversas_usuario_repository(db, usuario_1_id, limit=50):
             or_(
                 and_(conversa.usuario_1_id == usuario_1_id, conversa.usuario_2_id.in_(seguindo_subquery)),
                 and_(conversa.usuario_2_id==usuario_1_id, conversa.usuario_1_id.in_(seguindo_subquery))
-            )
-            .order_by(conversa.criado_em.desc())
-            .limit(limit) 
+            )  
         )
+        .order_by(conversa.criado_em.desc())
+            .limit(limit) 
     )
     result = db.execute(stmt) 
     return result.scalars().all()

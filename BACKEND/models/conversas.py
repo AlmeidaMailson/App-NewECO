@@ -3,7 +3,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database import Base
 
-class Conversa(Base):
+class conversa(Base):
     __tablename__ = "conversas"
 
     id = Column(Integer, primary_key=True , index=True)
