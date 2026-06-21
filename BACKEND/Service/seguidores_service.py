@@ -3,7 +3,9 @@ from fastapi import HTTPException
 from Repository.seguidores_repository import (
     create_seguir_repository,
     delete_seguir_repository,
-    get_seguir_repository
+    get_seguir_repository,
+    list_seguidores_repository,
+    list_seguindo_repository
 )
 from models.seguidores import Seguidor
 from models.user import User
@@ -92,4 +94,22 @@ def verificar_segue(db, seguindo_id, usuario_id):
 
     return {
         "following": seguir is not None
+    }
+
+def get_estatisticas_seguidores(db, usuario_id):
+    usuario = db.query(User).filter(User.id == usuario_id).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario nao encontrado"
+        )
+
+    seguidores = list_seguidores_repository(db, usuario_id)
+    seguindo = list_seguindo_repository(db, usuario_id)
+
+    return {
+        "usuario_id": usuario_id,
+        "seguidores": len(seguidores),
+        "seguindo": len(seguindo)
     }

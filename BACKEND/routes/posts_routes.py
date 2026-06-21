@@ -15,6 +15,8 @@ from Service.posts_service import (
     curtir_post,
     deletar_post,
     listar_feed,
+    listar_posts_perfil_usuario,
+    listar_posts_usuario,
     salvar_post
 )
 from schemas.posts_schemas import (
@@ -32,6 +34,25 @@ def listar_posts_feed(
     db: Session = Depends(get_db)
 ):
     return listar_feed(db, usuario_id)
+
+@router.get("/me", response_model=list[FeedPostResponse])
+def listar_meus_posts(
+    usuario_id: int,
+    db: Session = Depends(get_db)
+):
+    return listar_posts_usuario(db, usuario_id)
+
+@router.get("/user/{perfil_usuario_id}", response_model=list[FeedPostResponse])
+def listar_posts_de_usuario(
+    perfil_usuario_id: int,
+    usuario_id: int | None = None,
+    db: Session = Depends(get_db)
+):
+    return listar_posts_perfil_usuario(
+        db,
+        perfil_usuario_id=perfil_usuario_id,
+        usuario_id=usuario_id
+    )
 
 @router.post("/", response_model=PostResponse)
 async def create_post_route(

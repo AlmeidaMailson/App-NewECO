@@ -1,4 +1,4 @@
-from sqlalchemy import func, case
+from sqlalchemy import func, case, select
 from sqlalchemy.orm import joinedload
 
 from models.post import Post
@@ -30,19 +30,26 @@ def create_post_repository(db, dados_post):
     raise
 
 def list_posts_repository(db, usuario_id):
-  seguindo_subquery = db.query(Seguidor.seguindo_id).filter(
+  seguindo_select = select(Seguidor.seguindo_id).filter(
     Seguidor.seguidor_id == usuario_id
-  ).subquery()
+  )
 
   return db.query(Post).options(
     joinedload(Post.usuario)
   ).order_by(
     case(
-      (Post.usuario_id.in_(seguindo_subquery), 0),
+      (Post.usuario_id.in_(seguindo_select), 0),
       else_=1
     ),
     Post.criado_em.desc()
   ).all()
+
+def list_posts_usuario_repository(db, usuario_id):
+  return db.query(Post).options(
+    joinedload(Post.usuario)
+  ).filter(
+    Post.usuario_id == usuario_id
+  ).order_by(Post.criado_em.desc()).all()
 
 def get_post_repository(db, post_id):
   return db.query(Post).filter(Post.id == post_id).first()

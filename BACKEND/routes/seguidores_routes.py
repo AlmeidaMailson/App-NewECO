@@ -3,9 +3,21 @@ from sqlalchemy.orm import Session
 
 from app.depedencies import get_db
 from schemas.seguidores_schema import SeguidorCreate
-from Service.seguidores_service import create_seguir, delete_seguir, verificar_segue
+from Service.seguidores_service import (
+    create_seguir,
+    delete_seguir,
+    get_estatisticas_seguidores,
+    verificar_segue
+)
 
 router = APIRouter(prefix="/seguidores")
+
+@router.get("/stats/{usuario_id}")
+def estatisticas_seguidores(
+    usuario_id: int,
+    db: Session = Depends(get_db)
+):
+    return get_estatisticas_seguidores(db, usuario_id)
 
 @router.get("/{seguindo_id}/status")
 def verificar_status_seguidor(

@@ -5,7 +5,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -16,56 +16,177 @@ import { RootStackParamList } from "../../routes";
 import { theme } from "../../global/themes";
 import { API_URL } from "../../config/api";
 import { styles } from "./style";
+import PostCard from "../../components/PostCard";
 
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
   "TelaPerfilUsuario"
 >;
 
-type ProfilePost = {
-  id: number | string;
-  image: string;
-  caption: string;
-};
-
 export default function TelaPerfilUsuario() {
   const navigation = useNavigation<NavigationProps>();
   const route = useRoute<any>();
   const user = route.params?.user ?? {};
+  const profileUserId = Number(user.id ?? user.usuario_id);
+  const [loggedUser, setLoggedUser] = useState<any>(null);
   const [following, setFollowing] = useState(false);
   const [loadingFollow, setLoadingFollow] = useState(false);
-  const posts: ProfilePost[] = user.posts ?? [];
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [profileError, setProfileError] = useState("");
+  const [followStats, setFollowStats] = useState({
+    seguidores: 0,
+    seguindo: 0,
+  });
 
   useEffect(() => {
-    async function loadFollowStatus() {
+    async function loadProfileData() {
+      let usuarioId: number | null = null;
+
       try {
+        setLoadingProfile(true);
+        setProfileError("");
+
         const storedUser = await AsyncStorage.getItem("user");
 
-        if (!storedUser || !user.id) {
+        if (!profileUserId) {
+          setProfileError("Usuario do perfil nao encontrado.");
           return;
         }
 
-        const loggedUser = JSON.parse(storedUser);
-        const usuarioId = Number(loggedUser.id);
-        const seguindoId = Number(user.id);
+        const parsedLoggedUser = storedUser ? JSON.parse(storedUser) : null;
+        usuarioId = parsedLoggedUser?.id ? Number(parsedLoggedUser.id) : null;
 
-        const response = await axios.get(
-          `${API_URL}/seguidores/${seguindoId}/status`,
+        setLoggedUser(parsedLoggedUser);
+        console.log("CARREGANDO PERFIL:", {
+          profileUserId,
+          usuarioLogadoId: usuarioId,
+        });
+
+        const statsResponse = await axios.get(
+          `${API_URL}/seguidores/stats/${profileUserId}`
+        );
+
+        setFollowStats({
+          seguidores: statsResponse.data?.seguidores ?? 0,
+          seguindo: statsResponse.data?.seguindo ?? 0,
+        });
+      } catch (error: any) {
+        console.log("ERRO STATS PERFIL:", error.response?.data || error.message);
+      }
+
+      try {
+        const postsResponse = await axios.get(
+          `${API_URL}/posts/user/${profileUserId}`,
           {
-            params: {
-              usuario_id: usuarioId
-            }
+            params: usuarioId
+              ? {
+                  usuario_id: usuarioId
+                }
+              : {}
           }
         );
 
-        setFollowing(response.data.following);
+        setPosts(postsResponse.data ?? []);
+        console.log("POSTS DO PERFIL:", postsResponse.data?.length ?? 0);
       } catch (error: any) {
-        console.log(error.response?.data || error.message);
+        console.log("ERRO POSTS PERFIL:", error.response?.data || error.message);
+
+        try {
+          const feedResponse = await axios.get(`${API_URL}/posts/feed`, {
+            params: {
+              usuario_id: usuarioId ?? profileUserId
+            }
+          });
+          const postsDoPerfil = (feedResponse.data ?? []).filter(
+            (post: any) => Number(post.usuario_id) === Number(profileUserId)
+          );
+
+          setPosts(postsDoPerfil);
+          console.log("POSTS DO PERFIL VIA FEED:", postsDoPerfil.length);
+        } catch (feedError: any) {
+          console.log("ERRO FEED PERFIL:", feedError.response?.data || feedError.message);
+          setProfileError(
+            error.response?.data?.detail ?? "Erro ao carregar publicacoes do perfil."
+          );
+        }
+      }
+
+      try {
+        if (usuarioId && usuarioId !== profileUserId) {
+          const statusResponse = await axios.get(
+            `${API_URL}/seguidores/${profileUserId}/status`,
+            {
+              params: {
+                usuario_id: usuarioId
+              }
+            }
+          );
+
+          setFollowing(statusResponse.data.following);
+        }
+      } catch (error: any) {
+        console.log("ERRO STATUS SEGUIR:", error.response?.data || error.message);
+      } finally {
+        setLoadingProfile(false);
       }
     }
 
-    loadFollowStatus();
-  }, [user.id]);
+    loadProfileData();
+  }, [profileUserId]);
+
+  async function refreshProfileData() {
+    if (!profileUserId) {
+      return;
+    }
+
+    try {
+      const statsResponse = await axios.get(`${API_URL}/seguidores/stats/${profileUserId}`);
+
+      setFollowStats({
+        seguidores: statsResponse.data?.seguidores ?? 0,
+        seguindo: statsResponse.data?.seguindo ?? 0,
+      });
+    } catch (error: any) {
+      console.log("ERRO ATUALIZAR STATS:", error.response?.data || error.message);
+    }
+
+    try {
+      const postsResponse = await axios.get(`${API_URL}/posts/user/${profileUserId}`, {
+        params: loggedUser?.id
+          ? {
+              usuario_id: loggedUser.id
+            }
+          : {}
+      });
+
+      setPosts(postsResponse.data ?? []);
+    } catch (error: any) {
+      console.log("ERRO ATUALIZAR POSTS:", error.response?.data || error.message);
+
+      try {
+        const feedResponse = await axios.get(`${API_URL}/posts/feed`, {
+          params: loggedUser?.id
+            ? {
+                usuario_id: loggedUser.id
+              }
+            : {
+                usuario_id: profileUserId
+              }
+        });
+        const postsDoPerfil = (feedResponse.data ?? []).filter(
+          (post: any) => Number(post.usuario_id) === Number(profileUserId)
+        );
+
+        setPosts(postsDoPerfil);
+      } catch (feedError: any) {
+        console.log("ERRO ATUALIZAR FEED:", feedError.response?.data || feedError.message);
+        setProfileError(
+          error.response?.data?.detail ?? "Erro ao atualizar publicacoes do perfil."
+        );
+      }
+    }
+  }
 
   async function toggleFollow() {
     if (loadingFollow) {
@@ -84,10 +205,15 @@ export default function TelaPerfilUsuario() {
 
       const loggedUser = JSON.parse(storedUser);
       const usuarioId = Number(loggedUser.id);
-      const seguindoId = Number(user.id);
+      const seguindoId = profileUserId;
 
       if (!seguindoId) {
         alert("Usuario do perfil nao encontrado");
+        return;
+      }
+
+      if (usuarioId === seguindoId) {
+        alert("Voce nao pode seguir a si mesmo");
         return;
       }
 
@@ -99,6 +225,10 @@ export default function TelaPerfilUsuario() {
         });
 
         setFollowing(false);
+        setFollowStats((current) => ({
+          ...current,
+          seguidores: Math.max(current.seguidores - 1, 0),
+        }));
         return;
       }
 
@@ -116,6 +246,10 @@ export default function TelaPerfilUsuario() {
       );
 
       setFollowing(true);
+      setFollowStats((current) => ({
+        ...current,
+        seguidores: current.seguidores + 1,
+      }));
     } catch (error: any) {
       console.log(error.response?.data || error.message);
 
@@ -139,7 +273,7 @@ export default function TelaPerfilUsuario() {
 
         <Image
           source={{
-            uri: user.avatar_url ?? user.avatar ?? `https://i.pravatar.cc/150?u=${user.id ?? "new-eco"}`,
+            uri: user.avatar_url ?? user.avatar ?? `https://i.pravatar.cc/150?u=${profileUserId || "new-eco"}`,
           }}
           style={styles.avatar}
         />
@@ -159,14 +293,14 @@ export default function TelaPerfilUsuario() {
           <View style={styles.socialDivider} />
 
           <View style={styles.socialItem}>
-            <Text style={styles.socialValue}>{user.followers ?? 0}</Text>
+            <Text style={styles.socialValue}>{followStats.seguidores}</Text>
             <Text style={styles.socialLabel}>Seguidores</Text>
           </View>
 
           <View style={styles.socialDivider} />
 
           <View style={styles.socialItem}>
-            <Text style={styles.socialValue}>{user.following ?? 0}</Text>
+            <Text style={styles.socialValue}>{followStats.seguindo}</Text>
             <Text style={styles.socialLabel}>Seguindo</Text>
           </View>
         </View>
@@ -207,23 +341,32 @@ export default function TelaPerfilUsuario() {
         <Text style={styles.sectionSubtitle}>Posts recentes do perfil</Text>
       </View>
 
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => String(item.id)}
-        scrollEnabled={false}
-        contentContainerStyle={styles.posts}
-        ListEmptyComponent={
+      <View style={styles.posts}>
+        {loadingProfile ? (
+          <View style={styles.emptyPosts}>
+            <ActivityIndicator color={theme.colors.primaryLight} />
+            <Text style={styles.emptyPostsText}>Carregando publicacoes...</Text>
+          </View>
+        ) : profileError ? (
+          <View style={styles.emptyPosts}>
+            <Text style={styles.emptyPostsText}>{profileError}</Text>
+          </View>
+        ) : posts.length === 0 ? (
           <View style={styles.emptyPosts}>
             <Text style={styles.emptyPostsText}>Nenhuma publicacao encontrada.</Text>
           </View>
-        }
-        renderItem={({ item }) => (
-          <View style={styles.postCard}>
-            <Image source={{ uri: item.image }} style={styles.postImage} />
-            <Text style={styles.postCaption}>{item.caption}</Text>
-          </View>
+        ) : (
+          posts.map((item) => (
+            <PostCard
+              key={String(item.id)}
+              post={item}
+              loggedUser={loggedUser}
+              onChanged={refreshProfileData}
+              canDelete={false}
+            />
+          ))
         )}
-      />
+      </View>
     </ScrollView>
   );
 }

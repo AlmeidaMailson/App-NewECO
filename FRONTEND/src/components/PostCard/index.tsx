@@ -20,7 +20,7 @@ import { API_URL } from "../../config/api";
 
 const { width } = Dimensions.get("window");
 
-export default function PostCard({ post, loggedUser, onChanged }: any) {
+export default function PostCard({ post, loggedUser, onChanged, canDelete = false }: any) {
   const navigation = useNavigation<any>();
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [shareModalVisible, setShareModalVisible] = useState(false);
@@ -226,7 +226,7 @@ export default function PostCard({ post, loggedUser, onChanged }: any) {
           </TouchableOpacity>
         )}
 
-        {isOwner && (
+        {isOwner && canDelete && (
           <TouchableOpacity onPress={deletePost}>
             <Ionicons name="trash-outline" size={22} color={theme.colors.primaryDark} />
           </TouchableOpacity>

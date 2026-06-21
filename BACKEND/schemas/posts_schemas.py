@@ -11,9 +11,9 @@ class PostCreate (BaseModel):
 class PostResponse(BaseModel):
     id: int
     usuario_id: int
-    titulo: str
-    legenda: str
-    midia_url: str
+    titulo: str | None = None
+    legenda: str | None = None
+    midia_url: str | None = None
     tipo_midia: str
 
     class Config: 

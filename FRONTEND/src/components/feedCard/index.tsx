@@ -7,6 +7,7 @@ import { API_URL } from "../../config/api";
 import { feedObserver } from "../../utils/FeedObserver";
 import PostCard from "../PostCard";
 
+
 export default function FeedScreen() {
   const [posts, setPosts] = useState<any[]>([]);
   const [loggedUser, setLoggedUser] = useState<any>(null);
@@ -74,6 +75,7 @@ export default function FeedScreen() {
             post={item}
             loggedUser={loggedUser}
             onChanged={loadFeed}
+            canDelete={false}
           />
         )}
       />

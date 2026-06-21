@@ -19,6 +19,7 @@ from Repository.post_repository import (
     get_post_repository,
     get_salvo_repository,
     list_comentarios_repository,
+    list_posts_usuario_repository,
     list_posts_repository
 )
 from Repository.seguidores_repository import get_seguir_repository
@@ -76,6 +77,44 @@ def listar_feed(db, usuario_id):
 
     return [
         montar_post_feed(db, post, usuario_id)
+        for post in posts
+    ]
+
+def listar_posts_usuario(db, usuario_id):
+    usuario = db.query(User).filter(User.id == usuario_id).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario logado nao encontrado no banco"
+        )
+
+    posts = list_posts_usuario_repository(db, usuario_id)
+
+    return [
+        montar_post_feed(db, post, usuario_id)
+        for post in posts
+    ]
+
+def listar_posts_perfil_usuario(db, perfil_usuario_id, usuario_id=None):
+    usuario_perfil = db.query(User).filter(User.id == perfil_usuario_id).first()
+
+    if not usuario_perfil:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario do perfil nao encontrado"
+        )
+
+    usuario_logado = None
+
+    if usuario_id:
+        usuario_logado = db.query(User).filter(User.id == usuario_id).first()
+
+    usuario_visualizador_id = usuario_logado.id if usuario_logado else perfil_usuario_id
+    posts = list_posts_usuario_repository(db, perfil_usuario_id)
+
+    return [
+        montar_post_feed(db, post, usuario_visualizador_id)
         for post in posts
     ]
 
@@ -193,13 +232,14 @@ def montar_post_feed(db, post, usuario_id):
     curtida = get_curtida_repository(db, post.id, usuario_id)
     salvo = get_salvo_repository(db, post.id, usuario_id)
     seguindo = get_seguir_repository(db, usuario_id, post.usuario_id)
+    midia_url = post.midia_url.replace("\\", "/") if post.midia_url else None
 
     return {
         "id": post.id,
         "usuario_id": post.usuario_id,
         "titulo": post.titulo,
         "legenda": post.legenda,
-        "midia_url": post.midia_url,
+        "midia_url": midia_url,
         "tipo_midia": post.tipo_midia,
         "usuario": {
             "id": post.usuario.id,
