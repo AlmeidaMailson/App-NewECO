@@ -16,3 +16,6 @@ class Mensagem(Base):
     lida = Column(Boolean, nullable=False, default=False)
     
     criado_em = Column(DateTime(timezone=True), server_default=func.now())
+
+
+  

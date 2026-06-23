@@ -1,0 +1,2352 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2026-06-23T02:13:50Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/736668192",
+        "addr:city": "SCIA",
+        "addr:postcode": "71300-000",
+        "addr:suburb": "Santa luzia-Estrutural",
+        "amenity": "recycling",
+        "description": "Cooperativa especializada em inclusão socioprodutiva e fabricação de artefatos a partir de resíduos de madeira. Produzem bolas de couro artesanais.",
+        "name": "Cooperativa Sonho de Liberdade - fernando",
+        "note": "Marcação realizada por meio do conhecimento territorial do líder e prefeito regional comunitário Sr. Djalma Nascimento.",
+        "recycling_type": "centre",
+        "source": "local knowledge"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9842365,
+              -15.7786759
+            ],
+            [
+              -47.9843639,
+              -15.778715
+            ],
+            [
+              -47.984525,
+              -15.778761
+            ],
+            [
+              -47.9847426,
+              -15.7789143
+            ],
+            [
+              -47.9847196,
+              -15.7790318
+            ],
+            [
+              -47.9844785,
+              -15.7791978
+            ],
+            [
+              -47.9843438,
+              -15.7792825
+            ],
+            [
+              -47.9842303,
+              -15.7792378
+            ],
+            [
+              -47.9838317,
+              -15.7790803
+            ],
+            [
+              -47.9838979,
+              -15.7789453
+            ],
+            [
+              -47.9839693,
+              -15.7788019
+            ],
+            [
+              -47.9840852,
+              -15.7786299
+            ],
+            [
+              -47.9842365,
+              -15.7786759
+            ]
+          ]
+        ]
+      },
+      "id": "way/736668192"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1040911352",
+        "amenity": "recycling",
+        "recycling:batteries": "yes",
+        "recycling:glass": "yes",
+        "recycling:glass_bottles": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -48.0484157,
+              -15.8351411
+            ],
+            [
+              -48.0483663,
+              -15.8351175
+            ],
+            [
+              -48.0483734,
+              -15.8351038
+            ],
+            [
+              -48.0484223,
+              -15.8351271
+            ],
+            [
+              -48.0484157,
+              -15.8351411
+            ]
+          ]
+        ]
+      },
+      "id": "way/1040911352"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315409352",
+        "amenity": "recycling",
+        "building": "yes",
+        "building:levels": "1",
+        "height": "3.59",
+        "name": "reciclagem",
+        "recycling_type": "centre",
+        "ref:GDF_CIU": "119III2D0244",
+        "source": "GDF"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.983284,
+              -15.779148
+            ],
+            [
+              -47.983348,
+              -15.779185
+            ],
+            [
+              -47.983307,
+              -15.779252
+            ],
+            [
+              -47.983234,
+              -15.779215
+            ],
+            [
+              -47.983247,
+              -15.779196
+            ],
+            [
+              -47.983272,
+              -15.779164
+            ],
+            [
+              -47.983284,
+              -15.779148
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315409352"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315409354",
+        "amenity": "recycling",
+        "building": "yes",
+        "name": "Reciclagem",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9821026,
+              -15.7793753
+            ],
+            [
+              -47.9822662,
+              -15.7795354
+            ],
+            [
+              -47.9820678,
+              -15.779747
+            ],
+            [
+              -47.9818693,
+              -15.7795689
+            ],
+            [
+              -47.9821026,
+              -15.7793753
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315409354"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315724550",
+        "amenity": "recycling",
+        "building": "yes",
+        "building:levels": "1",
+        "height": "3.33",
+        "name": "Reciclagem",
+        "recycling_type": "centre",
+        "ref:GDF_CIU": "119III2C0697",
+        "source": "GDF"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.987658,
+              -15.779352
+            ],
+            [
+              -47.987694,
+              -15.779335
+            ],
+            [
+              -47.987697,
+              -15.779339
+            ],
+            [
+              -47.9877,
+              -15.779338
+            ],
+            [
+              -47.987741,
+              -15.77941
+            ],
+            [
+              -47.987739,
+              -15.779415
+            ],
+            [
+              -47.987737,
+              -15.779416
+            ],
+            [
+              -47.987699,
+              -15.779433
+            ],
+            [
+              -47.987658,
+              -15.779352
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315724550"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315728304",
+        "amenity": "recycling",
+        "building": "yes",
+        "building:levels": "1",
+        "height": "3.33",
+        "name": "Reciclagem",
+        "recycling_type": "centre",
+        "ref:GDF_CIU": "119III2A0679",
+        "source": "GDF"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.987593,
+              -15.773859
+            ],
+            [
+              -47.987566,
+              -15.77389
+            ],
+            [
+              -47.987532,
+              -15.773861
+            ],
+            [
+              -47.987561,
+              -15.773829
+            ],
+            [
+              -47.987593,
+              -15.773859
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315728304"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315728308",
+        "amenity": "recycling",
+        "building": "yes",
+        "building:levels": "1",
+        "height": "3.16",
+        "name": "Reciclagem",
+        "recycling_type": "centre",
+        "ref:GDF_CIU": "119III2A0901",
+        "source": "GDF"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.988961,
+              -15.773196
+            ],
+            [
+              -47.988965,
+              -15.773164
+            ],
+            [
+              -47.988976,
+              -15.773165
+            ],
+            [
+              -47.989028,
+              -15.773172
+            ],
+            [
+              -47.989078,
+              -15.773178
+            ],
+            [
+              -47.989079,
+              -15.773193
+            ],
+            [
+              -47.989068,
+              -15.773194
+            ],
+            [
+              -47.989075,
+              -15.77321
+            ],
+            [
+              -47.989054,
+              -15.773209
+            ],
+            [
+              -47.989034,
+              -15.773209
+            ],
+            [
+              -47.988961,
+              -15.773196
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315728308"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315943677",
+        "amenity": "recycling",
+        "name": "Cooperfé",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9835607,
+              -15.7818523
+            ],
+            [
+              -47.9838438,
+              -15.7816002
+            ],
+            [
+              -47.9840455,
+              -15.7817773
+            ],
+            [
+              -47.9837836,
+              -15.7820464
+            ],
+            [
+              -47.9835607,
+              -15.7818523
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315943677"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315943678",
+        "amenity": "recycling",
+        "name": "Cooperativa Coortrap",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9838438,
+              -15.7816002
+            ],
+            [
+              -47.9835607,
+              -15.7818523
+            ],
+            [
+              -47.9830899,
+              -15.781447
+            ],
+            [
+              -47.9833554,
+              -15.7811643
+            ],
+            [
+              -47.9838438,
+              -15.7816002
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315943678"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315943679",
+        "amenity": "recycling",
+        "name": "Capital Reciclagem",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9858885,
+              -15.7797838
+            ],
+            [
+              -47.9850195,
+              -15.780713
+            ],
+            [
+              -47.9840539,
+              -15.7817144
+            ],
+            [
+              -47.9834584,
+              -15.7811518
+            ],
+            [
+              -47.9852394,
+              -15.7792417
+            ],
+            [
+              -47.9858885,
+              -15.7797838
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315943679"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315990239",
+        "amenity": "recycling",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9872011,
+              -15.7735119
+            ],
+            [
+              -47.9872934,
+              -15.7735877
+            ],
+            [
+              -47.9871994,
+              -15.7737136
+            ],
+            [
+              -47.9870692,
+              -15.7736287
+            ],
+            [
+              -47.9871153,
+              -15.7735658
+            ],
+            [
+              -47.9871434,
+              -15.7735816
+            ],
+            [
+              -47.9871725,
+              -15.7735473
+            ],
+            [
+              -47.9872011,
+              -15.7735119
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315990239"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315990240",
+        "amenity": "recycling",
+        "name": "guarda  material de reciclagem",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9874023,
+              -15.7733521
+            ],
+            [
+              -47.9872791,
+              -15.7735322
+            ],
+            [
+              -47.9871258,
+              -15.7734018
+            ],
+            [
+              -47.9871928,
+              -15.7733232
+            ],
+            [
+              -47.9871581,
+              -15.7733002
+            ],
+            [
+              -47.9872013,
+              -15.7732372
+            ],
+            [
+              -47.9874023,
+              -15.7733521
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315990240"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315993694",
+        "amenity": "recycling",
+        "name": "reciclagem /compra",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9873626,
+              -15.7797008
+            ],
+            [
+              -47.9875195,
+              -15.779622
+            ],
+            [
+              -47.9875597,
+              -15.7796969
+            ],
+            [
+              -47.9873975,
+              -15.779773
+            ],
+            [
+              -47.9873626,
+              -15.7797008
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315993694"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315993695",
+        "amenity": "recycling",
+        "name": "compra de material",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9869194,
+              -15.7799118
+            ],
+            [
+              -47.9869629,
+              -15.7800034
+            ],
+            [
+              -47.9868228,
+              -15.7800705
+            ],
+            [
+              -47.9867779,
+              -15.7799834
+            ],
+            [
+              -47.9869194,
+              -15.7799118
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315993695"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315993696",
+        "amenity": "recycling",
+        "name": "deposito de material",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9827663,
+              -15.7806195
+            ],
+            [
+              -47.98283,
+              -15.7806826
+            ],
+            [
+              -47.9827893,
+              -15.7807098
+            ],
+            [
+              -47.9826318,
+              -15.7806366
+            ],
+            [
+              -47.9826761,
+              -15.7806025
+            ],
+            [
+              -47.9827274,
+              -15.7806451
+            ],
+            [
+              -47.9827663,
+              -15.7806195
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315993696"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315993697",
+        "amenity": "recycling",
+        "name": "deposito de material",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9810291,
+              -15.7817423
+            ],
+            [
+              -47.980953,
+              -15.7818241
+            ],
+            [
+              -47.9807548,
+              -15.7817304
+            ],
+            [
+              -47.9808362,
+              -15.7816299
+            ],
+            [
+              -47.9810291,
+              -15.7817423
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315993697"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1315993698",
+        "amenity": "recycling",
+        "name": "deposito de material",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9805726,
+              -15.7817968
+            ],
+            [
+              -47.9805602,
+              -15.7818854
+            ],
+            [
+              -47.9807938,
+              -15.7820284
+            ],
+            [
+              -47.980546,
+              -15.7823451
+            ],
+            [
+              -47.9804168,
+              -15.7822651
+            ],
+            [
+              -47.9805566,
+              -15.7820318
+            ],
+            [
+              -47.9804151,
+              -15.7819688
+            ],
+            [
+              -47.980454,
+              -15.7817866
+            ],
+            [
+              -47.9805726,
+              -15.7817968
+            ]
+          ]
+        ]
+      },
+      "id": "way/1315993698"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316000909",
+        "amenity": "recycling",
+        "name": "deposito de material",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.9820307,
+              -15.7798351
+            ],
+            [
+              -47.9821422,
+              -15.7799134
+            ],
+            [
+              -47.9819988,
+              -15.7800803
+            ],
+            [
+              -47.9818838,
+              -15.7800037
+            ],
+            [
+              -47.9820307,
+              -15.7798351
+            ]
+          ]
+        ]
+      },
+      "id": "way/1316000909"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1201115446",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8990381,
+          -15.791459
+        ]
+      },
+      "id": "node/1201115446"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1211310499",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.9173675,
+          -15.8052963
+        ]
+      },
+      "id": "node/1211310499"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1249288076",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes",
+        "recycling:scrap_metal": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.923036,
+          -15.8091535
+        ]
+      },
+      "id": "node/1249288076"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1249288326",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.9218247,
+          -15.8058657
+        ]
+      },
+      "id": "node/1249288326"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1327058515",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.914732,
+          -15.8069191
+        ]
+      },
+      "id": "node/1327058515"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1327068833",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.9182378,
+          -15.804862
+        ]
+      },
+      "id": "node/1327068833"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1351408488",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8855996,
+          -15.7408524
+        ]
+      },
+      "id": "node/1351408488"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3889504844",
+        "amenity": "recycling"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.9255482,
+          -15.7395492
+        ]
+      },
+      "id": "node/3889504844"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3889504847",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8862263,
+          -15.7413469
+        ]
+      },
+      "id": "node/3889504847"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3889504851",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8864897,
+          -15.7428698
+        ]
+      },
+      "id": "node/3889504851"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3889504852",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8864126,
+          -15.743206
+        ]
+      },
+      "id": "node/3889504852"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3889504853",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8861357,
+          -15.7439878
+        ]
+      },
+      "id": "node/3889504853"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3889504854",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8858517,
+          -15.7444294
+        ]
+      },
+      "id": "node/3889504854"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3889504855",
+        "amenity": "recycling",
+        "location": "overground",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8854335,
+          -15.7462508
+        ]
+      },
+      "id": "node/3889504855"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3889504856",
+        "amenity": "recycling",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8825163,
+          -15.7463182
+        ]
+      },
+      "id": "node/3889504856"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3889504859",
+        "amenity": "recycling",
+        "location": "overground",
+        "recycling:cans": "yes",
+        "recycling:glass": "yes",
+        "recycling:paper": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.883093,
+          -15.7466864
+        ]
+      },
+      "id": "node/3889504859"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/6573175206",
+        "amenity": "recycling",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.880844,
+          -15.7599699
+        ]
+      },
+      "id": "node/6573175206"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/6910474225",
+        "amenity": "recycling",
+        "name": "Centro de Reciclagem do Varjão - CRV",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8746657,
+          -15.7140326
+        ]
+      },
+      "id": "node/6910474225"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/10309409667",
+        "amenity": "recycling",
+        "name": "VP Entulho",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -48.0400931,
+          -15.7946299
+        ]
+      },
+      "id": "node/10309409667"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/10313491060",
+        "amenity": "recycling",
+        "name": "RECICLAGEM",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -48.1953323,
+          -15.6547775
+        ]
+      },
+      "id": "node/10313491060"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/10767386969",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7787896,
+          -15.7303797
+        ]
+      },
+      "id": "node/10767386969"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/10767386974",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7790812,
+          -15.7304805
+        ]
+      },
+      "id": "node/10767386974"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/10791324045",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7792899,
+          -15.7307536
+        ]
+      },
+      "id": "node/10791324045"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/10813697592",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7793292,
+          -15.7306546
+        ]
+      },
+      "id": "node/10813697592"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11254346806",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7787852,
+          -15.7306879
+        ]
+      },
+      "id": "node/11254346806"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11254346809",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7790694,
+          -15.7307936
+        ]
+      },
+      "id": "node/11254346809"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11255786156",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7794456,
+          -15.7307478
+        ]
+      },
+      "id": "node/11255786156"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11255786158",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7794066,
+          -15.7308469
+        ]
+      },
+      "id": "node/11255786158"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11256204857",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7790821,
+          -15.7316819
+        ]
+      },
+      "id": "node/11256204857"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11256204858",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7791211,
+          -15.7315828
+        ]
+      },
+      "id": "node/11256204858"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11256204866",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7789835,
+          -15.7315524
+        ]
+      },
+      "id": "node/11256204866"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11256204867",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7789429,
+          -15.7316509
+        ]
+      },
+      "id": "node/11256204867"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11256204878",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7794934,
+          -15.7323567
+        ]
+      },
+      "id": "node/11256204878"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11256204879",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.779596,
+          -15.732395
+        ]
+      },
+      "id": "node/11256204879"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11256204886",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.778511,
+          -15.7319996
+        ]
+      },
+      "id": "node/11256204886"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11256204887",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7786136,
+          -15.7320379
+        ]
+      },
+      "id": "node/11256204887"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11258030994",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7847044,
+          -15.7327383
+        ]
+      },
+      "id": "node/11258030994"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11258030995",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7847434,
+          -15.7326392
+        ]
+      },
+      "id": "node/11258030995"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11267319902",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7846094,
+          -15.7325766
+        ]
+      },
+      "id": "node/11267319902"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11267319903",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7845694,
+          -15.7326754
+        ]
+      },
+      "id": "node/11267319903"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11267358825",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7844067,
+          -15.7335051
+        ]
+      },
+      "id": "node/11267358825"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11267358826",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7843677,
+          -15.7336042
+        ]
+      },
+      "id": "node/11267358826"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11267358834",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7842262,
+          -15.7335632
+        ]
+      },
+      "id": "node/11267358834"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11267358835",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7842659,
+          -15.7334644
+        ]
+      },
+      "id": "node/11267358835"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11268211908",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7815258,
+          -15.7311827
+        ]
+      },
+      "id": "node/11268211908"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11268211910",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7815652,
+          -15.7310837
+        ]
+      },
+      "id": "node/11268211910"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11270202997",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7810116,
+          -15.7325282
+        ]
+      },
+      "id": "node/11270202997"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11270203000",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7809722,
+          -15.7326272
+        ]
+      },
+      "id": "node/11270203000"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11270766141",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7804571,
+          -15.7339484
+        ]
+      },
+      "id": "node/11270766141"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11270766144",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7804965,
+          -15.7338494
+        ]
+      },
+      "id": "node/11270766144"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11270766150",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7798993,
+          -15.7353854
+        ]
+      },
+      "id": "node/11270766150"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11270766153",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7799387,
+          -15.7352864
+        ]
+      },
+      "id": "node/11270766153"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11285131294",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7783816,
+          -15.7339663
+        ]
+      },
+      "id": "node/11285131294"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11285131296",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7784847,
+          -15.7340034
+        ]
+      },
+      "id": "node/11285131296"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11285148355",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7774984,
+          -15.7336482
+        ]
+      },
+      "id": "node/11285148355"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11285148356",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7773953,
+          -15.7336111
+        ]
+      },
+      "id": "node/11285148356"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11294625955",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7780113,
+          -15.7344524
+        ]
+      },
+      "id": "node/11294625955"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11294625956",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.778053,
+          -15.7343543
+        ]
+      },
+      "id": "node/11294625956"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11294629451",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7779236,
+          -15.7343158
+        ]
+      },
+      "id": "node/11294629451"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11294629452",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7778839,
+          -15.7344146
+        ]
+      },
+      "id": "node/11294629452"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11301353590",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7777058,
+          -15.7352544
+        ]
+      },
+      "id": "node/11301353590"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11301353593",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7776674,
+          -15.7353537
+        ]
+      },
+      "id": "node/11301353593"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11301353716",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7775965,
+          -15.7351615
+        ]
+      },
+      "id": "node/11301353716"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11301353717",
+        "amenity": "recycling",
+        "recycling:cardboard": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:metal": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7775562,
+          -15.7352601
+        ]
+      },
+      "id": "node/11301353717"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11310312816",
+        "amenity": "recycling",
+        "recycling:glass_bottles": "yes",
+        "recycling:green_waste": "yes",
+        "recycling:paper": "yes",
+        "recycling:plastic": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.7834682,
+          -15.7804903
+        ]
+      },
+      "id": "node/11310312816"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12496966682",
+        "amenity": "recycling",
+        "recycling:green_waste": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8864954,
+          -15.7367329
+        ]
+      },
+      "id": "node/12496966682"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12496966816",
+        "amenity": "recycling",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8853866,
+          -15.7390752
+        ]
+      },
+      "id": "node/12496966816"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12752988262",
+        "amenity": "recycling",
+        "opening_hours": "24/7",
+        "recycling:cans": "yes",
+        "recycling:cardboard": "yes",
+        "recycling:paper": "yes",
+        "recycling:paper_packaging": "yes",
+        "recycling:plastic": "yes",
+        "recycling:plastic_bottles": "yes",
+        "recycling:plastic_packaging": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8423544,
+          -15.6719193
+        ]
+      },
+      "id": "node/12752988262"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/13231477119",
+        "addr:housenumber": "Lote 1 loja 2",
+        "addr:postcode": "72006450",
+        "addr:street": "SHVP - Rua 6 - Chácara 242",
+        "addr:suburb": "Vicente Pires",
+        "amenity": "recycling",
+        "building": "commercial",
+        "name": "RECITRÔN - Reciclagem de Lixo Eletrônico",
+        "operator": "Recitron - Logistica reversa",
+        "operator:type": "private",
+        "recycling:aluminium": "yes",
+        "recycling:batteries": "yes",
+        "recycling:bicycles": "yes",
+        "recycling:car_parts": "yes",
+        "recycling:electrical_appliances": "yes",
+        "recycling:scrap_metal": "yes",
+        "recycling_type": "centre"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -48.0294642,
+          -15.8087252
+        ]
+      },
+      "id": "node/13231477119"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/13305139139",
+        "amenity": "recycling",
+        "recycling:batteries": "yes",
+        "recycling_type": "container"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.8461726,
+          -15.8101019
+        ]
+      },
+      "id": "node/13305139139"
+    }
+  ]
+}

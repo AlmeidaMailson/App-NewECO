@@ -15,6 +15,8 @@ from routes.posts_routes import router as posts_router
 from routes.seguidores_routes import router as seguidores_router
 from routes.conversa_router import router as conversa_router
 from routes.mensagens_routes import router as mensagens_router
+from routes import mapa_verde_routes
+from routes import missoes_routes
 
 from models.post_interacoes import CurtidaPost, ComentarioPost, PostSalvo, CompartilhamentoPost
 from models.user import User
@@ -39,6 +41,9 @@ app.include_router(posts_router)
 app.include_router(seguidores_router)
 app.include_router(conversa_router)
 app.include_router(mensagens_router)
+app.include_router(mapa_verde_routes.router)
+app.include_router(missoes_routes.router)
+
 
 
 UPLOADS_DIR = Path(__file__).resolve().parents[1] / "uploads"

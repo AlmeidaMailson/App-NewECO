@@ -1,5 +1,4 @@
-from sqlalchemy import func, case, select, or_, and_
-from sqlalchemy.orm import joinedload
+from sqlalchemy import func, select, or_, and_
 
 
 from models.conversas import conversa

@@ -1,6 +1,5 @@
 from sqlalchemy import CheckConstraint,Column, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from app.database import Base
 
 class conversa(Base):
@@ -17,3 +16,5 @@ class conversa(Base):
     __table_args__ = (
         CheckConstraint("usuario_1_id != usuario_2_id", name="check_usuarios_diferentes"),
     )
+
+  
