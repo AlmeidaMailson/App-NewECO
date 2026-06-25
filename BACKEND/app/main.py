@@ -19,6 +19,10 @@ from routes import mapa_verde_routes
 from routes import missoes_routes
 from routes import usuario_missao, eco_beneficio_historico
 from routes import notificacao_routes
+from routes import configuracao_privacidade_routes, configuracao_seguranca_routes
+
+#jwt
+from routes import auth
 
 from models.user import User
 
@@ -47,6 +51,12 @@ app.include_router(missoes_routes.router)
 app.include_router(usuario_missao.router)
 app.include_router(eco_beneficio_historico.router)
 app.include_router(notificacao_routes.router)
+app.include_router(configuracao_privacidade_routes.router)
+app.include_router(configuracao_seguranca_routes.router)
+
+# jwt
+app.include_router(auth.router)
+
 
 
 

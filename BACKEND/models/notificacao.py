@@ -25,4 +25,4 @@ class Notificacao(Base):
     criado_em = Column(DateTime, default=datetime.utcnow)
 
     # Relacionamento mapeado com a classe Usuario importada acima
-    remetente = relationship("Usuario", foreign_keys=[remetente_id])
+    remetente = relationship("models.user.User", foreign_keys=[remetente_id])

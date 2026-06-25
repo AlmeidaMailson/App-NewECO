@@ -10,21 +10,29 @@ from Service.seguidores_service import (
     verificar_segue
 )
 
-router = APIRouter(prefix="/seguidores")
+# Imports corretos e padronizados conforme solicitado
+from core.deps import obter_usuario_atual
+from models.user import User as Usuario
+
+router = APIRouter(prefix="/seguidores", tags=["Seguidores / Conexões"])
 
 @router.get("/stats/{usuario_id}")
 def estatisticas_seguidores(
     usuario_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
 ):
+    # Mantém exatamente o comportamento anterior
     return get_estatisticas_seguidores(db, usuario_id)
 
 @router.get("/{seguindo_id}/status")
 def verificar_status_seguidor(
     seguindo_id: int,
     usuario_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
 ):
+    # O comportamento continua o mesmo, mas agora com a garantia de que o usuário está autenticado
     return verificar_segue(
         db,
         seguindo_id=seguindo_id,
@@ -35,23 +43,27 @@ def verificar_status_seguidor(
 def seguir_usuario(
     seguidor: SeguidorCreate,
     usuario_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
 ):
+    # Passa exatamente os mesmos parâmetros para o seu Service
     return create_seguir(
         db,
         seguidor_id=seguidor.seguidor_id,
         seguindo_id=seguidor.seguindo_id,
-        usuario_id=usuario_id
+        usuario_id=usuario_logado.id #  Garante que a ação usa o ID validado pelo Token
     )
 
 @router.delete("/{seguindo_id}")
 def deixar_de_seguir(
     seguindo_id: int,
     usuario_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
 ):
+    # Passa exatamente os mesmos parâmetros para o seu Service
     return delete_seguir(
         db,
         seguindo_id=seguindo_id,
-        usuario_id=usuario_id
+        usuario_id=usuario_logado.id # Garante que a ação usa o ID validado pelo Token
     )
