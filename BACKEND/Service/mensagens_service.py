@@ -5,7 +5,6 @@ from fastapi import HTTPException, status
 
 class MensagemService:
     
-    # 🌟 CORRIGIDO: 'self' com 's' minúsculo
     def enviar_nova_mensagem(self, db: Session, esquema_mensagem: MensagemCreate, remetente_id: int):
         
         if not esquema_mensagem.conversa_id:
@@ -23,7 +22,7 @@ class MensagemService:
         
         return nova_mensagem
 
-    # 🌟 CORRIGIDO: 'self' com 's' minúsculo
+    
     def buscar_historico_do_chat(self, db: Session, conversa_id: int):
         
         if not conversa_id:

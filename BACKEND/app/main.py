@@ -17,8 +17,9 @@ from routes.conversa_router import router as conversa_router
 from routes.mensagens_routes import router as mensagens_router
 from routes import mapa_verde_routes
 from routes import missoes_routes
+from routes import usuario_missao, eco_beneficio_historico
+from routes import notificacao_routes
 
-from models.post_interacoes import CurtidaPost, ComentarioPost, PostSalvo, CompartilhamentoPost
 from models.user import User
 
 Base.metadata.create_all(bind=engine)
@@ -43,6 +44,9 @@ app.include_router(conversa_router)
 app.include_router(mensagens_router)
 app.include_router(mapa_verde_routes.router)
 app.include_router(missoes_routes.router)
+app.include_router(usuario_missao.router)
+app.include_router(eco_beneficio_historico.router)
+app.include_router(notificacao_routes.router)
 
 
 
