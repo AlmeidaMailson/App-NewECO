@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  Image,
   TextInput,
   FlatList,
   TouchableOpacity,
+  Image,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -15,41 +16,72 @@ import { theme } from "../../global/themes";
 import { RootStackParamList } from "../../routes";
 import { style } from "./style";
 
+// 🟢 Seus gerenciadores de sessão e API
+import UserSession from "../../utils/UserSessions";
+import { API_URL } from "../../config/api";
+import axios from "axios";
+
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
   "TelaMensagem"
 >;
 
-const contacts = [
-  {
-    id: "1",
-    name: "Kitata Anth",
-    username: "@kitataeco",
-    lastMessage: "Oie! Tudo bem?",
-    time: "15:45",
-    avatar: "https://i.pravatar.cc/150?img=5",
-  },
-  {
-    id: "2",
-    name: "Coleta Verde",
-    username: "@coletaverde",
-    lastMessage: "Seu item ainda está disponível?",
-    time: "12:10",
-    avatar: "https://i.pravatar.cc/150?img=8",
-  },
-  {
-    id: "3",
-    name: "Ana Recicla",
-    username: "@anarecicla",
-    lastMessage: "Podemos combinar a troca amanhã.",
-    time: "Ontem",
-    avatar: "https://i.pravatar.cc/150?img=14",
-  },
-];
+// Tipagem profissional para a lista de contatos ativos
+interface ContactProps {
+  id: string; // ID da conversa ou do usuário destino
+  name: string;
+  username: string;
+  lastMessage: string;
+  time: string;
+  avatar: string;
+}
 
 export default function TelaMensagem() {
   const navigation = useNavigation<NavigationProps>();
+  
+  const [conversas, setConversas] = useState<ContactProps[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [termoPesquisa, setTermoPesquisa] = useState("");
 
+  // Pega o ID do usuário que está logado no app
+  const meuUsuario = UserSession.getInstance().getUser();
+  const meuId = meuUsuario?.id;
+
+  // 🟢 Carrega a lista de chats ativos do usuário vinda do Back-end
+  useEffect(() => {
+    const carregarListaDeConversas = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/conversas/usuario/${meuId}`);
+        setConversas(response.data);
+      } catch (error) {
+        console.error("Erro ao carregar lista de conversas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (meuId) {
+      carregarListaDeConversas();
+    }
+  }, [meuId]);
+
+  // 🟢 Filtro dinâmico da barra de pesquisa em tempo real
+  const conversasFiltradas = conversas.filter((contato) =>
+    contato.name.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
+    contato.username.toLowerCase().includes(termoPesquisa.toLowerCase())
+  );
+
+const abrirChat = (contato: ContactProps) => {
+
+  (navigation as any).navigate("Conversa", {
+    recipientUser: {
+      id: contato.id,
+      name: contato.name,
+      username: contato.username,
+      avatar: contato.avatar,
+    },
+  });
+};
   return (
     <View style={style.container}>
       <View style={style.header}>
@@ -63,11 +95,14 @@ export default function TelaMensagem() {
           </TouchableOpacity>
         </View>
 
+        {/* INPUT DE PESQUISA COM ESTADO */}
         <View style={style.searchContainer}>
           <TextInput
             placeholder="Pesquisar..."
             placeholderTextColor="#777"
             style={style.input}
+            value={termoPesquisa}
+            onChangeText={setTermoPesquisa}
           />
           <Ionicons name="search" size={20} color="#777" />
         </View>
@@ -75,28 +110,43 @@ export default function TelaMensagem() {
         <Image source={Logo} style={style.logo} resizeMode="contain" />
       </View>
 
-      <FlatList
-        data={contacts}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={style.list}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={style.card}
-            onPress={() => navigation.navigate("Conversa")}
-          >
-            <Image source={{ uri: item.avatar }} style={style.avatar} />
+      {/* RENDERIZAÇÃO DA LISTA OU FEEDBACK DE LOADING */}
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primaryDark} />
+        </View>
+      ) : (
+        <FlatList
+          data={conversasFiltradas}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={style.list}
+          ListEmptyComponent={
+            <Text style={{ textAlign: "center", marginTop: 40, color: "#999" }}>
+              Nenhuma conexão ecoeficiente encontrada.
+            </Text>
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={style.card}
+              onPress={() => abrirChat(item)} // 🟢 Agora envia o ID e dados corretos!
+            >
+              <Image source={{ uri: item.avatar }} style={style.avatar} />
 
-            <View style={style.info}>
-              <Text style={style.name}>{item.name}</Text>
-              <Text style={style.lastMessage}>{item.lastMessage}</Text>
-            </View>
+              <View style={style.info}>
+                <Text style={style.name}>{item.name}</Text>
+                <Text style={style.lastMessage} numberOfLines={1}>
+                  {item.lastMessage}
+                </Text>
+              </View>
 
-            <Text style={style.time}>{item.time}</Text>
-          </TouchableOpacity>
-        )}
-      />
+              <Text style={style.time}>{item.time}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
 
+      {/* SEU MENU INFERIOR MANTIDO */}
       <View style={style.menu}>
         <TouchableOpacity onPress={() => navigation.navigate("TelaHome")}>
           <Ionicons name="home-outline" size={26} color={theme.colors.primaryDark} />
@@ -106,7 +156,7 @@ export default function TelaMensagem() {
           style={style.addButton}
           onPress={() => navigation.navigate("TelaAdicionarUsuario")}
         >
-          <Ionicons name="person-add" size={26} color="#fff" />
+          <PersonAddIcon />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate("TelaPerfil")}>
@@ -116,3 +166,8 @@ export default function TelaMensagem() {
     </View>
   );
 }
+
+// Pequeno ajuste auxiliar para renderizar o ícone de adicionar
+const PersonAddIcon = () => (
+  <Ionicons name="person-add" size={26} color="#fff" />
+);
