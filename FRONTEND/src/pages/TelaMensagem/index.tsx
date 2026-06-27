@@ -16,19 +16,18 @@ import { theme } from "../../global/themes";
 import { RootStackParamList } from "../../routes";
 import { style } from "./style";
 
-// 🟢 Seus gerenciadores de sessão e API
 import UserSession from "../../utils/UserSessions";
-import { API_URL } from "../../config/api";
-import axios from "axios";
+
+// 🟢 CORREÇÃO: Usando nossa instância configurada e segura que já injeta o JWT
+import api from "../../config/api"; 
 
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
   "TelaMensagem"
 >;
 
-// Tipagem profissional para a lista de contatos ativos
 interface ContactProps {
-  id: string; // ID da conversa ou do usuário destino
+  id: string; 
   name: string;
   username: string;
   lastMessage: string;
@@ -43,18 +42,18 @@ export default function TelaMensagem() {
   const [loading, setLoading] = useState(true);
   const [termoPesquisa, setTermoPesquisa] = useState("");
 
-  // Pega o ID do usuário que está logado no app
   const meuUsuario = UserSession.getInstance().getUser();
   const meuId = meuUsuario?.id;
 
-  // 🟢 Carrega a lista de chats ativos do usuário vinda do Back-end
+  // 🟢 Carrega a lista de chats ativos passando o JWT implicitamente
   useEffect(() => {
     const carregarListaDeConversas = async () => {
       try {
-        const response = await axios.get(`${API_URL}/conversas/usuario/${meuId}`);
-        setConversas(response.data);
-      } catch (error) {
-        console.error("Erro ao carregar lista de conversas:", error);
+        // Como usamos a 'api', o interceptor adiciona o Authorization Header sozinho!
+        const response = await api.get(`/conversas/usuario/${meuId}`);
+        setConversas(response.data || []);
+      } catch (error: any) {
+        console.error("Erro ao carregar lista de conversas:", error.message);
       } finally {
         setLoading(false);
       }
@@ -65,25 +64,25 @@ export default function TelaMensagem() {
     }
   }, [meuId]);
 
-  // 🟢 Filtro dinâmico da barra de pesquisa em tempo real
   const conversasFiltradas = conversas.filter((contato) =>
     contato.name.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
     contato.username.toLowerCase().includes(termoPesquisa.toLowerCase())
   );
 
-const abrirChat = (contato: ContactProps) => {
+  const abrirChat = (contato: ContactProps) => {
+    (navigation as any).navigate("Conversa", {
+      recipientUser: {
+        id: contato.id,
+        name: contato.name,
+        username: contato.username,
+        avatar: contato.avatar,
+      },
+    });
+  };
 
-  (navigation as any).navigate("Conversa", {
-    recipientUser: {
-      id: contato.id,
-      name: contato.name,
-      username: contato.username,
-      avatar: contato.avatar,
-    },
-  });
-};
   return (
     <View style={style.container}>
+      {/* HEADER */}
       <View style={style.header}>
         <View style={style.headerTop}>
           <TouchableOpacity onPress={() => navigation.navigate("TelaHome")}>
@@ -95,7 +94,7 @@ const abrirChat = (contato: ContactProps) => {
           </TouchableOpacity>
         </View>
 
-        {/* INPUT DE PESQUISA COM ESTADO */}
+        {/* INPUT DE PESQUISA */}
         <View style={style.searchContainer}>
           <TextInput
             placeholder="Pesquisar..."
@@ -110,7 +109,7 @@ const abrirChat = (contato: ContactProps) => {
         <Image source={Logo} style={style.logo} resizeMode="contain" />
       </View>
 
-      {/* RENDERIZAÇÃO DA LISTA OU FEEDBACK DE LOADING */}
+      {/* RENDERIZAÇÃO DA LISTA */}
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color={theme.colors.primaryDark} />
@@ -129,9 +128,9 @@ const abrirChat = (contato: ContactProps) => {
           renderItem={({ item }) => (
             <TouchableOpacity
               style={style.card}
-              onPress={() => abrirChat(item)} // 🟢 Agora envia o ID e dados corretos!
+              onPress={() => abrirChat(item)}
             >
-              <Image source={{ uri: item.avatar }} style={style.avatar} />
+              <Image source={{ uri: item.avatar ?? "https://i.pravatar.cc/150?img=32" }} style={style.avatar} />
 
               <View style={style.info}>
                 <Text style={style.name}>{item.name}</Text>
@@ -146,7 +145,7 @@ const abrirChat = (contato: ContactProps) => {
         />
       )}
 
-      {/* SEU MENU INFERIOR MANTIDO */}
+      {/* MENU INFERIOR PADRONIZADO */}
       <View style={style.menu}>
         <TouchableOpacity onPress={() => navigation.navigate("TelaHome")}>
           <Ionicons name="home-outline" size={26} color={theme.colors.primaryDark} />
@@ -156,7 +155,7 @@ const abrirChat = (contato: ContactProps) => {
           style={style.addButton}
           onPress={() => navigation.navigate("TelaAdicionarUsuario")}
         >
-          <PersonAddIcon />
+          <Ionicons name="person-add" size={22} color="#fff" />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate("TelaPerfil")}>
@@ -166,8 +165,3 @@ const abrirChat = (contato: ContactProps) => {
     </View>
   );
 }
-
-// Pequeno ajuste auxiliar para renderizar o ícone de adicionar
-const PersonAddIcon = () => (
-  <Ionicons name="person-add" size={26} color="#fff" />
-);

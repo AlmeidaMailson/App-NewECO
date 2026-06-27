@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,30 +7,28 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  Alert, 
 } from "react-native";
 import { style } from "./style";
 import Background from "../../components/Background";
 import Logo from "../../assets/logo.png";
 import ProfileImage from "../../components/ProfileImage";
-import TextInputComponent from "../../components/TextInputComponent";
 import Botao from "../../components/botao";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes";
-import axios from "axios";
+
+//  Importando a nossa instância centralizada em vez do axios puro
+import api from "../../config/api"; 
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Cadastro">;
 
-
-
 export default function Cadastro() {
-
-   const navigation = useNavigation<NavigationProps>();
-
+  const navigation = useNavigation<NavigationProps>();
 
   const [nome, setNome] = useState("");
-  const [email, setEmail]= useState("");
+  const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [estado, setEstado] = useState("");
   const [cidade, setCidade] = useState("");
@@ -38,31 +36,40 @@ export default function Cadastro() {
   const [confirmasenha, setConfirmasenha] = useState("");
 
   async function cadastrar() {
-    try{
-      if (senha !== confirmasenha){
-        alert("As senhas não coincidem");
-      }else{
-      const response = await axios.post("http://localhost:8000/users/",
-         {
-        nome, 
+    try {
+      //  Adicionado o return para travar a execução se as senhas forem diferentes
+      if (senha !== confirmasenha) {
+        Alert.alert("Atenção", "As senhas não coincidem");
+        return; 
+      }
+
+      // Validação básica de campos vazios
+      if (!nome || !email || !senha) {
+        Alert.alert("Atenção", "Preencha os campos obrigatórios (Nome, E-mail e Senha)");
+        return;
+      }
+
+      // Usando 'api.post' e passando apenas a rota relativa '/users/'
+      const response = await api.post("/users/", {
+        nome,
         email,
         telefone,
         estado,
         cidade,
-        senha
-      }
-     );
-     alert("cadastro realizado com sucesso");
+        senha,
+      });
 
-     navigation.navigate("Login")
+      Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
+      navigation.navigate("Login");
+
+    } catch (error: any) {
+      console.log("Erro no servidor:", error.response?.data);
+      console.log("Mensagem de erro:", error.message);
+      
+      const mensagemErro = error.response?.data?.detail ?? "Não foi possível realizar o cadastro.";
+      Alert.alert("Erro ao cadastrar", mensagemErro);
     }
-  } catch (error: any) {
-  console.log(error.response?.data);
-  console.log(error.message);
-
-  alert("Erro ao cadastrar");
-}
-}
+  }
 
   return (
     <Background>
@@ -85,13 +92,13 @@ export default function Cadastro() {
 
           {/* FORM */}
           <View style={style.form}>
-            <Input label="Nome Completo" placeholder="Digite seu nome" value= {nome} onChangeText={setNome} />
-            <Input label="E-mail" placeholder="Digite seu e-mail" value={email} onChangeText={setEmail}  />
-            <Input label="telefone" placeholder="Telefone/WhatsApp" value={telefone} onChangeText={setTelefone} />
+            <Input label="Nome Completo" placeholder="Digite seu nome" value={nome} onChangeText={setNome} />
+            <Input label="E-mail" placeholder="Digite seu e-mail" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+            <Input label="Telefone" placeholder="Telefone/WhatsApp" value={telefone} onChangeText={setTelefone} keyboardType="phone-pad" />
 
             {/* LINHA DUPLA */}
-            <View style={style.row}>  
-              <Input label="Estado" placeholder="UF" small value={estado} onChangeText={setEstado} />
+            <View style={style.row}>
+              <Input label="Estado" placeholder="UF" small value={estado} onChangeText={setEstado} autoCapitalize="characters" maxLength={2} />
               <Input label="Cidade" placeholder="Cidade" small value={cidade} onChangeText={setCidade} />
             </View>
 
@@ -100,8 +107,8 @@ export default function Cadastro() {
               label="Confirmar Senha"
               placeholder="Confirme a senha"
               secure
-              value = {confirmasenha}
-              onChangeText= {setConfirmasenha}
+              value={confirmasenha}
+              onChangeText={setConfirmasenha}
             />
 
             {/* BOTÃO */}
@@ -133,6 +140,7 @@ function Input({
   small,
   value,
   onChangeText,
+  ...rest // Permite passar propriedades extras como keyboardType nativamente
 }: any) {
   return (
     <View style={[style.inputGroup, small && style.inputSmall]}>
@@ -145,6 +153,7 @@ function Input({
         style={style.input}
         value={value}
         onChangeText={onChangeText}
+        {...rest}
       />
     </View>
   );

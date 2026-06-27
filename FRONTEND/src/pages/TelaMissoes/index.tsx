@@ -1,13 +1,13 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { Text, View, FlatList, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { theme } from "../../global/themes";
 import { style } from "./style";
 
-// 🟢 Seus imports de sessão e ambiente (iguais aos do Login)
+// 🟢 CORREÇÃO: Usando a nossa instância do Axios com JWT acoplado
+import api from "../../config/api";
 import UserSession from "../../utils/UserSessions";
-import { API_URL } from "../../config/api";
 
 type Mission = {
   id: number;
@@ -18,7 +18,7 @@ type Mission = {
   local: string;
   tema: string;
   ativo: boolean;
-  progresso_atual: number; // Agora o progresso real virá mapeado do banco por usuário
+  progresso_atual: number; 
 };
 
 const obterIconePorTema = (tema: string): keyof typeof Ionicons.glyphMap => {
@@ -41,35 +41,35 @@ export default function TelaMissoes() {
   const [missoes, setMissoes] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const carregarMissoesDoUsuario = async () => {
-      try {
-        // 🟢 Resgata os dados salvos na Singleton do Singleton ao logar
-        const usuarioLogado = UserSession.getInstance().getUser();
-        const userId = usuarioLogado?.id;
+  // 🟢 MUDANÇA: useFocusEffect recarrega a lista sempre que o usuário abre a tela
+  useFocusEffect(
+    React.useCallback(() => {
+      const carregarMissoesDoUsuario = async () => {
+        try {
+          const usuarioLogado = UserSession.getInstance().getUser();
+          const userId = usuarioLogado?.id;
 
-        if (!userId) {
-          Alert.alert("Erro de autenticação", "Usuário não identificado. Por favor, refça o login.");
-          navigation.navigate("Login" as never);
-          return;
+          if (!userId) {
+            Alert.alert("Erro de autenticação", "Usuário não identificado. Por favor, refaça o login.");
+            navigation.navigate("Login" as never);
+            return;
+          }
+
+          // Busca as missões personalizadas passando o JWT de forma implícita
+          const response = await api.get(`/missoes/usuario/${userId}`);
+          setMissoes(response.data || []);
+        } catch (error: any) {
+          console.error("Erro ao puxar missões personalizadas:", error.message);
+          Alert.alert("Erro", "Não foi possível carregar as missões.");
+        } finally {
+          setLoading(false);
         }
+      };
 
-        // 🟢 Faz o Fetch enviando dinamicamente o ID do usuário logado
-        const response = await fetch(`${API_URL}/missoes/usuario/${userId}`);
-        const dados = await response.json();
-        
-        setMissoes(dados);
-      } catch (error) {
-        console.error("Erro ao puxar missões personalizadas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      carregarMissoesDoUsuario();
+    }, [navigation])
+  );
 
-    carregarMissoesDoUsuario();
-  }, [navigation]);
-
-  // Lógica inteligente de somar pontos mantida com sucesso
   const totalEcoPontos = useMemo(
     () =>
       missoes
@@ -81,27 +81,20 @@ export default function TelaMissoes() {
   const completed = missoes.filter((m) => m.progresso_atual >= m.total_acoes).length;
   const progressPercent = missoes.length > 0 ? (completed / missoes.length) * 100 : 0;
 
-  // 🟢 Envia a atualização de progresso para o back-end persistir no banco de dados real
+  // 🟢 CORREÇÃO: Enviando o incremento usando o Axios centralizado
   const registrarProgressoNoBanco = async (missaoId: number) => {
     try {
       const usuarioLogado = UserSession.getInstance().getUser();
       const userId = usuarioLogado?.id;
 
-      // Chama o endpoint para atualizar progresso daquela missão para aquele usuário
-      const response = await fetch(`${API_URL}/missoes/progresso`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuario_id: userId,
-          missao_id: missaoId
-        })
+      const response = await api.post("/missoes/progresso", {
+        usuario_id: userId,
+        missao_id: missaoId
       });
 
-      if (!response.ok) throw new Error();
+      const missaoAtualizada = response.data;
 
-      const missaoAtualizada = await response.json();
-
-      // Atualiza o estado da lista localmente na tela refletindo a resposta do banco
+      // Atualiza o estado da lista localmente na tela
       setMissoes((atuais) =>
         atuais.map((m) => (m.id === missaoId ? { ...m, progresso_atual: missaoAtualizada.progresso_atual } : m))
       );
@@ -110,7 +103,8 @@ export default function TelaMissoes() {
         Alert.alert("Missão Concluída!", `Sensacional! +${missaoAtualizada.recompensa} EcoPontos na conta.`);
       }
 
-    } catch (error) {
+    } catch (error: any) {
+      console.log("Erro ao registrar progresso:", error.response?.data || error.message);
       Alert.alert("Erro", "Não foi possível registrar o progresso no servidor.");
     }
   };

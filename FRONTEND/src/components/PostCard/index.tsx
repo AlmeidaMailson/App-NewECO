@@ -13,10 +13,11 @@ import {
   Share,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { theme } from "../../global/themes";
-import { API_URL } from "../../config/api";
+
+//  MUDANÇA AQUI: Importando nossa instância autenticada e removendo o axios puro
+import api, { API_URL } from "../../config/api"; 
 
 const { width } = Dimensions.get("window");
 
@@ -31,9 +32,16 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
   const [shareCount, setShareCount] = useState(post.compartilhamentos_count ?? 0);
   const [comments, setComments] = useState(post.comentarios ?? []);
   const [isFollowingAuthor, setIsFollowingAuthor] = useState(Boolean(post.seguindo_autor));
+
+
+  const caminhoLimpo = post.midia_url?.startsWith("uploads/")
+    ? post.midia_url.replace("uploads/", "")
+    : post.midia_url;
+
   const mediaUrl = post.midia_url?.startsWith("http")
     ? post.midia_url
-    : `${API_URL}/${post.midia_url}`;
+    : `${API_URL}/uploads/${caminhoLimpo}`;
+
   const isOwner = Number(loggedUser?.id) === Number(post.usuario_id);
 
   const profile = {
@@ -51,17 +59,10 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
     navigation.navigate("TelaPerfilUsuario", { user: profile });
   };
 
+  //  REQUISIÇÃO JWT: Sem passar id na URL e usando a instância 'api'
   const toggleLike = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/posts/${post.id}/curtir`,
-        null,
-        {
-          params: {
-            usuario_id: loggedUser.id
-          }
-        }
-      );
+      const response = await api.post(`/posts/${post.id}/curtir`);
 
       setIsLiked(response.data.curtido);
       setLikesCount(response.data.curtidas_count);
@@ -71,6 +72,7 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
     }
   };
 
+  //  REQUISIÇÃO JWT: Corpo limpo e cabeçalhos automáticos
   const addComment = async () => {
     const trimmed = commentText.trim();
 
@@ -79,17 +81,9 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
     }
 
     try {
-      const response = await axios.post(
-        `${API_URL}/posts/${post.id}/comentarios`,
-        {
-          texto: trimmed
-        },
-        {
-          params: {
-            usuario_id: loggedUser.id
-          }
-        }
-      );
+      const response = await api.post(`/posts/${post.id}/comentarios`, {
+        texto: trimmed
+      });
 
       setComments((current: any[]) => [...current, response.data]);
       setCommentText("");
@@ -99,17 +93,10 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
     }
   };
 
+  // REQUISIÇÃO JWT: Limpeza completa da rota
   const toggleSave = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/posts/${post.id}/salvar`,
-        null,
-        {
-          params: {
-            usuario_id: loggedUser.id
-          }
-        }
-      );
+      const response = await api.post(`/posts/${post.id}/salvar`);
 
       setIsSaved(response.data.salvo);
     } catch (error: any) {
@@ -118,17 +105,10 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
     }
   };
 
+  // REQUISIÇÃO JWT
   const sharePost = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/posts/${post.id}/compartilhar`,
-        null,
-        {
-          params: {
-            usuario_id: loggedUser.id
-          }
-        }
-      );
+      const response = await api.post(`/posts/${post.id}/compartilhar`);
 
       setShareCount(response.data.compartilhamentos_count);
       setShareModalVisible(false);
@@ -142,32 +122,20 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
     }
   };
 
+  // REQUISIÇÃO JWT: Tratamento dos endpoints de seguidores
   const toggleFollowAuthor = async () => {
     try {
       if (isFollowingAuthor) {
-        await axios.delete(`${API_URL}/seguidores/${post.usuario_id}`, {
-          params: {
-            usuario_id: loggedUser.id
-          }
-        });
+        await api.delete(`/seguidores/${post.usuario_id}`);
 
         setIsFollowingAuthor(false);
         onChanged?.();
         return;
       }
 
-      await axios.post(
-        `${API_URL}/seguidores/`,
-        {
-          seguidor_id: loggedUser.id,
-          seguindo_id: post.usuario_id
-        },
-        {
-          params: {
-            usuario_id: loggedUser.id
-          }
-        }
-      );
+      await api.post(`/seguidores/`, {
+        segundo_id: post.usuario_id // O backend descobre o seguidor_id pelo Token!
+      });
 
       setIsFollowingAuthor(true);
       onChanged?.();
@@ -177,6 +145,7 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
     }
   };
 
+  //  REQUISIÇÃO JWT: Deleção segura de publicação
   const deletePost = () => {
     Alert.alert(
       "Excluir post",
@@ -188,12 +157,7 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
           style: "destructive",
           onPress: async () => {
             try {
-              await axios.delete(`${API_URL}/posts/${post.id}`, {
-                params: {
-                  usuario_id: loggedUser.id
-                }
-              });
-
+              await api.delete(`/posts/${post.id}`);
               onChanged?.();
             } catch (error: any) {
               console.log(error.response?.data || error.message);
@@ -373,6 +337,7 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
   );
 }
 
+// ... Os estilos permanecem idênticos abaixo ...
 const styles = StyleSheet.create({
   card: {
     width: "100%",

@@ -36,3 +36,11 @@ class UserLoginResponse(BaseModel):
     email: str
     class Config:
         from_attributes = True
+
+
+class VerificarEmailSchema(BaseModel):
+    email: EmailStr
+
+class RedefinirSenhaSchema(BaseModel):
+    email: EmailStr
+    nova_senha: str

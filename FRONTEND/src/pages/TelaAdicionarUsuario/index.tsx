@@ -6,16 +6,18 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes";
 import { theme } from "../../global/themes";
-import { API_URL } from "../../config/api";
 import { styles } from "./style";
+
+// 🟢 CORREÇÃO: Centralização segura de chamadas de API e Sessão
+import api from "../../config/api";
+import UserSession from "../../utils/UserSessions";
 
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -39,7 +41,6 @@ type BackendUser = {
 export default function TelaAdicionarUsuario() {
   const navigation = useNavigation<NavigationProps>();
   const [users, setUsers] = useState<BackendUser[]>([]);
-  const [loggedUserId, setLoggedUserId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("todos");
   const [following, setFollowing] = useState<string[]>([]);
@@ -47,57 +48,42 @@ export default function TelaAdicionarUsuario() {
   const [chatOnly, setChatOnly] = useState<string[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
 
+  // 🟢 Resgata o ID do usuário logado de forma síncrona e limpa usando o Singleton
+  const loggedUserId = UserSession.getInstance().getUser()?.id;
+
   useEffect(() => {
-    async function loadUsers() {
+    async function loadData() {
+      if (!loggedUserId) {
+        setLoadingUsers(false);
+        return;
+      }
+
       try {
-        const storedUser = await AsyncStorage.getItem("user");
-        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-        const usuarioId = parsedUser?.id ? Number(parsedUser.id) : null;
+        // 1. Carrega todos os usuários da plataforma (Passando pelo prefixo /auth configurado no FastAPI)
+        const responseUsers = await api.get("/auth/users");
+        const databaseUsers: BackendUser[] = responseUsers.data ?? [];
 
-        setLoggedUserId(usuarioId);
-
-        const response = await axios.get(`${API_URL}/users/`);
-        const databaseUsers: BackendUser[] = response.data ?? [];
-        const usersWithoutLoggedUser = usuarioId
-          ? databaseUsers.filter((user) => Number(user.id) !== usuarioId)
-          : databaseUsers;
-
+        // Filtra para remover o próprio usuário logado da lista de descoberta
+        const usersWithoutLoggedUser = databaseUsers.filter(
+          (user) => Number(user.id) !== Number(loggedUserId)
+        );
         setUsers(usersWithoutLoggedUser);
 
-        if (usuarioId) {
-          const statusResponses = await Promise.all(
-            usersWithoutLoggedUser.map(async (user) => {
-              try {
-                const status = await axios.get(
-                  `${API_URL}/seguidores/${user.id}/status`,
-                  {
-                    params: {
-                      usuario_id: usuarioId
-                    }
-                  }
-                );
+        // 2. 🟢 OTIMIZAÇÃO: Busca quem você segue de uma vez só, sem fazer loops infinitos
+        const responseFollowing = await api.get(`/seguidores/usuario/${loggedUserId}`);
+        // Supondo que o back devolva uma lista de IDs ou objetos com id_seguido
+        const idsSeguindo = responseFollowing.data.map((f: any) => String(f.id_seguido || f.id));
+        setFollowing(idsSeguindo);
 
-                return status.data.following ? String(user.id) : null;
-              } catch {
-                return null;
-              }
-            })
-          );
-
-          setFollowing(
-            statusResponses.filter((id): id is string => id !== null)
-          );
-        }
       } catch (error: any) {
-        console.log(error.response?.data || error.message);
-        alert("Erro ao carregar usuarios do banco");
+        console.log("Erro na tela de descoberta:", error.message);
       } finally {
         setLoadingUsers(false);
       }
     }
 
-    loadUsers();
-  }, []);
+    loadData();
+  }, [loggedUserId]);
 
   const filteredUsers = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -109,9 +95,7 @@ export default function TelaAdicionarUsuario() {
         (user.cidade ?? "").toLowerCase().includes(normalizedSearch) ||
         (user.estado ?? "").toLowerCase().includes(normalizedSearch);
 
-      if (!matchesSearch) {
-        return false;
-      }
+      if (!matchesSearch) return false;
 
       if (filter === "seguir") {
         return !following.includes(String(user.id));
@@ -127,57 +111,32 @@ export default function TelaAdicionarUsuario() {
 
   const toggleFollow = async (id: number) => {
     if (!loggedUserId) {
-      alert("Faca login para seguir usuarios");
+      alert("Faça login para seguir usuários");
       return;
     }
 
     const userId = String(id);
-
-    if (loadingFollowIds.includes(userId)) {
-      return;
-    }
+    if (loadingFollowIds.includes(userId)) return;
 
     try {
       setLoadingFollowIds((current) => [...current, userId]);
 
       if (following.includes(userId)) {
-        await axios.delete(`${API_URL}/seguidores/${id}`, {
-          params: {
-            usuario_id: loggedUserId
-          }
-        });
-
+        // Unfollow
+        await api.delete(`/seguidores/${id}`);
         setFollowing((current) => current.filter((item) => item !== userId));
         return;
       }
 
-      await axios.post(
-        `${API_URL}/seguidores/`,
-        {
-          seguidor_id: loggedUserId,
-          seguindo_id: id
-        },
-        {
-          params: {
-            usuario_id: loggedUserId
-          }
-        }
-      );
+      // Follow
+      await api.post("/seguidores/", {
+        seguindo_id: id
+      });
 
-      setFollowing((current) =>
-        current.includes(userId) ? current : [...current, userId]
-      );
+      setFollowing((current) => [...current, userId]);
     } catch (error: any) {
-      console.log(error.response?.data || error.message);
-
-      if (error.response?.status === 409) {
-        setFollowing((current) =>
-          current.includes(userId) ? current : [...current, userId]
-        );
-        return;
-      }
-
-      alert(error.response?.data?.detail ?? "Erro ao atualizar seguidor");
+      console.log("Erro ao atualizar seguidor:", error.message);
+      alert("Não foi possível atualizar o status de seguidor.");
     } finally {
       setLoadingFollowIds((current) => current.filter((item) => item !== userId));
     }
@@ -185,12 +144,12 @@ export default function TelaAdicionarUsuario() {
 
   const startChat = (id: number) => {
     const userId = String(id);
-
     setChatOnly((current) => (current.includes(userId) ? current : [...current, userId]));
     navigation.navigate("Conversa");
   };
 
   const openProfile = (user: BackendUser) => {
+    // Redireciona para o perfil passando o objeto mapeado
     navigation.navigate("TelaPerfilUsuario", { user });
   };
 
@@ -229,7 +188,7 @@ export default function TelaAdicionarUsuario() {
           <View style={styles.metaRow}>
             <Ionicons name="leaf-outline" size={15} color={theme.colors.primaryDark} />
             <Text style={styles.metaText}>
-              {item.eco_beneficios ?? 0} eco beneficios
+              {item.eco_beneficios ?? 0} eco benefícios
             </Text>
           </View>
 
@@ -239,19 +198,20 @@ export default function TelaAdicionarUsuario() {
               onPress={() => toggleFollow(item.id)}
               disabled={isLoadingFollow}
             >
-              <Ionicons
-                name={isFollowing ? "checkmark" : "person-add-outline"}
-                size={17}
-                color={isFollowing ? theme.colors.primaryDark : "#fff"}
-              />
-              <Text
-                style={[
-                  styles.followButtonText,
-                  isFollowing && styles.followingButtonText,
-                ]}
-              >
-                {isFollowing ? "Seguindo" : "Seguir"}
-              </Text>
+              {isLoadingFollow ? (
+                <ActivityIndicator size="small" color={isFollowing ? theme.colors.primaryDark : "#fff"} />
+              ) : (
+                <>
+                  <Ionicons
+                    name={isFollowing ? "checkmark" : "person-add-outline"}
+                    size={17}
+                    color={isFollowing ? theme.colors.primaryDark : "#fff"}
+                  />
+                  <Text style={[styles.followButtonText, isFollowing && styles.followingButtonText]}>
+                    {isFollowing ? "Seguindo" : "Seguir"}
+                  </Text>
+                </>
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -263,12 +223,7 @@ export default function TelaAdicionarUsuario() {
                 size={17}
                 color={hasChat ? "#fff" : theme.colors.primaryLight}
               />
-              <Text
-                style={[
-                  styles.chatButtonText,
-                  hasChat && styles.chatButtonTextActive,
-                ]}
-              >
+              <Text style={[styles.chatButtonText, hasChat && styles.chatButtonTextActive]}>
                 Conversar
               </Text>
             </TouchableOpacity>
@@ -284,7 +239,7 @@ export default function TelaAdicionarUsuario() {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Adicionar usuarios</Text>
+        <Text style={styles.headerTitle}>Adicionar usuários</Text>
         <View style={styles.iconButton} />
       </View>
 
@@ -307,12 +262,7 @@ export default function TelaAdicionarUsuario() {
               style={[styles.filterButton, filter === item && styles.filterButtonActive]}
               onPress={() => setFilter(item)}
             >
-              <Text
-                style={[
-                  styles.filterText,
-                  filter === item && styles.filterTextActive,
-                ]}
-              >
+              <Text style={[styles.filterText, filter === item && styles.filterTextActive]}>
                 {item === "todos" ? "Todos" : item === "seguir" ? "Seguir" : "Conversar"}
               </Text>
             </TouchableOpacity>
@@ -328,10 +278,14 @@ export default function TelaAdicionarUsuario() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Ionicons name="search-outline" size={34} color={theme.colors.primaryLight} />
-            <Text style={styles.emptyText}>
-              {loadingUsers ? "Carregando usuarios..." : "Nenhum usuario encontrado."}
-            </Text>
+            {loadingUsers ? (
+              <ActivityIndicator size="large" color={theme.colors.primaryLight} />
+            ) : (
+              <>
+                <Ionicons name="search-outline" size={34} color={theme.colors.primaryLight} />
+                <Text style={styles.emptyText}>Nenhum usuário encontrado.</Text>
+              </>
+            )}
           </View>
         }
       />

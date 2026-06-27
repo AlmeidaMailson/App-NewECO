@@ -3,7 +3,7 @@ import { View, FlatList, StyleSheet, Text, ActivityIndicator } from "react-nativ
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { theme } from "../../global/themes";
-import { API_URL } from "../../config/api";
+import api from "../../config/api";
 import { feedObserver } from "../../utils/FeedObserver";
 import PostCard from "../PostCard";
 
@@ -13,7 +13,7 @@ export default function FeedScreen() {
   const [loggedUser, setLoggedUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadFeed = useCallback(async () => {
+const loadFeed = useCallback(async () => {
     try {
       const storedUser = await AsyncStorage.getItem("user");
       const user = storedUser ? JSON.parse(storedUser) : null;
@@ -25,15 +25,13 @@ export default function FeedScreen() {
 
       setLoggedUser(user);
 
-      const response = await axios.get(`${API_URL}/posts/feed`, {
-        params: {
-          usuario_id: user.id
-        }
-      });
+      // CORREÇÃO AQUI: Mudamos de 'axios.get' para 'api.get'
+      // E removemos o '?usuario_id=86' da URL, deixando apenas a rota limpa!
+      const response = await api.get("/posts/feed");
 
       setPosts(response.data ?? []);
     } catch (error: any) {
-      console.log(error.response?.data || error.message);
+      console.log("Erro ao carregar o feed:", error.response?.data || error.message);
     } finally {
       setLoading(false);
     }

@@ -8,9 +8,11 @@ import { RootStackParamList } from "../../routes";
 import { theme } from "../../global/themes";
 import { style } from "./style";
 
+// Importando a nossa instância autenticada centralizada
+import api from "../../config/api";
+
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, "MapaVerde">;
 
-// 🟢 Tipagem batendo certinho com o que o seu back-end em FastAPI devolve
 interface PontoEcologico {
   id: number;
   nome: string;
@@ -25,25 +27,24 @@ interface PontoEcologico {
 export default function Mapaverde() {
   const navigation = useNavigation<NavigationProps>();
   
-  // Estados para gerenciar os dados da API
   const [pontos, setPontos] = useState<PontoEcologico[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  // 🟢 Busca os 70 pontos reais direto do seu back-end
+  //  Busca os 70 pontos reais passando pelo Interceptor JWT automaticamente
   useEffect(() => {
     const buscarPontosDoBanco = async () => {
       try {
-        // Altere o IP abaixo para o IP da sua máquina (evite usar localhost no emulador android)
-        const response = await fetch("http://10.0.2.2:8000/mapa-verde/pontos");
-        const dados = await response.json();
+        // Usando nossa instância limpa. Adeque a rota se no seu back mudar o prefixo
+        const response = await api.get("/mapa-verde/pontos");
+        const dados = response.data;
         
         setPontos(dados);
-        if (dados.length > 0) {
-          setSelectedId(dados[0].id); // Seleciona o primeiro ponto por padrão
+        if (dados && dados.length > 0) {
+          setSelectedId(dados[0].id);
         }
-      } catch (error) {
-        console.error("Erro ao carregar pontos do mapa verde:", error);
+      } catch (error: any) {
+        console.error("Erro ao carregar pontos do mapa verde:", error.response?.data || error.message);
       } finally {
         setLoading(false);
       }
@@ -52,10 +53,8 @@ export default function Mapaverde() {
     buscarPontosDoBanco();
   }, []);
 
-  // Encontra o ponto selecionado dinamicamente
   const selectedPoint = pontos.find((p) => p.id === selectedId) ?? pontos[0];
 
-  // Tela de carregamento enquanto a API responde
   if (loading) {
     return (
       <View style={[style.container, { justifyContent: "center", alignItems: "center" }]}>
@@ -69,20 +68,18 @@ export default function Mapaverde() {
     <View style={style.container}>
       <MapView
         style={style.map}
-        //  Centralizado estrategicamente no centro de Brasília
         initialRegion={{
           latitude: -15.793889,
           longitude: -47.882778,
-          latitudeDelta: 0.25, // Zoom um pouco mais aberto para ver os 70 pontos espalhados
+          latitudeDelta: 0.25,
           longitudeDelta: 0.25,
         }}
       >
-        {/* Renderiza dinamicamente os 70 pontos do banco no mapa */}
         {pontos.map((point) => (
           <Marker
             key={point.id.toString()}
             coordinate={{
-              latitude: Number(point.latitude),  // Força conversão caso venha string do banco
+              latitude: Number(point.latitude),
               longitude: Number(point.longitude),
             }}
             title={point.nome}
@@ -103,7 +100,6 @@ export default function Mapaverde() {
         </View>
       </View>
 
-      {/* Exibe o card do ponto clicado na tela */}
       {selectedPoint && (
         <View style={style.bottomPanel}>
           <View style={style.selectedCard}>
@@ -127,7 +123,6 @@ export default function Mapaverde() {
             </TouchableOpacity>
           </View>
 
-          {/* Lista Horizontal de Chips com os tipos de pontos encontrados */}
           <FlatList
             horizontal
             data={pontos}

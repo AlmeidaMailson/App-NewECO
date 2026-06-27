@@ -17,7 +17,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { style } from "./style";
 import { feedObserver } from "../../utils/FeedObserver";
-import { API_URL } from "../../config/api";
+
+
+import api from "../../config/api";
 
 export default function FinalizarPublicacao() {
   const navigation = useNavigation<any>();
@@ -56,17 +58,19 @@ export default function FinalizarPublicacao() {
   }, []);
 
   async function publicar() {
+    // Validação básica antes de subir
+    if (!titulo.trim() || !caption.trim()) {
+      Alert.alert("Atenção", "Preencha o título e a legenda do seu post!");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      if (!user?.id) {
-        console.log("Usuário não encontrado");
-        return;
-      }
-
+      // multipart form data normalmente para carregar a foto/vídeo
       const formData = new FormData();
 
-      formData.append("usuario_id", String(user.id));
+      // 🟢 REMOVIDO: formData.append("usuario_id", ...) -> O backend descobre quem posta pelo Token JWT!
       formData.append("titulo", titulo);
       formData.append("legenda", caption);
 
@@ -76,30 +80,27 @@ export default function FinalizarPublicacao() {
         type: midia.mediaType === "video" ? "video/mp4" : "image/jpeg",
       } as any);
 
-      console.log("USER ID:", user?.id);
-      const response = await fetch(
-        `${API_URL}/posts/`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      console.log("Enviando publicação via Axios (Multipart Form Data)...");
 
-      const data = await response.json();
+      // instância 'api' injetando o cabeçalho 'multipart/form-data'
+      const response = await api.post("/posts/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       console.log("STATUS:", response.status);
-      console.log("RESPOSTA:", data);
+      console.log("RESPOSTA:", response.data);
 
-      if (!response.ok) {
-        Alert.alert("Erro ao publicar", data?.detail ?? "Nao foi possivel salvar o post.");
-        return;
-      }
-
+      Alert.alert("Sucesso", "Publicação compartilhada com a comunidade!");
       feedObserver.notify();
       navigation.navigate("TelaHome");
 
-    } catch (error) {
-      console.log("ERRO AO PUBLICAR:", error);
+    } catch (error: any) {
+      console.log("ERRO AO PUBLICAR:", error.response?.data || error.message);
+      
+      const erroServidor = error.response?.data?.detail ?? "Não foi possível salvar o seu post.";
+      Alert.alert("Erro ao publicar", erroServidor);
     } finally {
       setLoading(false);
     }
@@ -107,9 +108,9 @@ export default function FinalizarPublicacao() {
 
   if (loadingUser) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator color="#fff" />
-        <Text style={{ color: "#fff" }}>Carregando usuário...</Text>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#0D1117" }}>
+        <ActivityIndicator color="#00B89A" size="large" />
+        <Text style={{ color: "#fff", marginTop: 10 }}>Carregando usuário...</Text>
       </View>
     );
   }

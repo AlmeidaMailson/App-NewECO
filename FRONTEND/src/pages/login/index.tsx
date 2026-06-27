@@ -21,6 +21,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../../config/api";
 
+//  NOVO IMPORT: Armazenamento seguro para o Token JWT
+import * as SecureStore from "expo-secure-store";
 
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -32,44 +34,51 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-async function login() {
-  try {
-    const response = await axios.post(
-      `${API_URL}/users/login`,
-      { email, senha }
-    );
 
-    if (!response.data) {
-      alert("Erro no login");
+  async function login() {
+    try {
+      const response = await axios.post(
+        `${API_URL}/users/login`,
+        { email, senha }
+      );
+
+      if (!response.data) {
+        alert("Erro no login");
+        return;
+      }
+
+      console.log("LOGIN OK:", response.data);
+
+      // CAPTURA: Pegamos o token e os dados do usuário que o backend devolveu
+      const { access_token, user: loggedUser } = response.data;
+
+      // GRAVAÇÃO: Salva o Token JWT com a chave exata que o interceptador espera
+      await SecureStore.setItemAsync("token_neweco", access_token);
+
+      // Mantém os seus salvamentos originais para não quebrar o resto do app
+      await AsyncStorage.setItem(
+        "user",
+        JSON.stringify(loggedUser)
+      );
+
+      UserSession.getInstance().setUser(loggedUser);
+
+      navigation.replace("TelaHome"); // 🔥 melhor que navigate
+
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+      alert("Email ou senha inválidos");
+    }
+  }
+
+  async function handleLogin() {
+    if (!email || !senha) {
+      alert("Preencha todos os campos");
       return;
     }
 
-    console.log("LOGIN OK:", response.data);
-
-    const loggedUser = response.data.user;
-
-    await AsyncStorage.setItem(
-      "user",
-      JSON.stringify(loggedUser)
-    );
-
-    UserSession.getInstance().setUser(loggedUser);
-
-    navigation.replace("TelaHome"); // 🔥 melhor que navigate
-
-  } catch (error: any) {
-    console.log(error.response?.data || error.message);
-    alert("Email ou senha inválidos");
+    await login();
   }
-}
-  async function handleLogin() {
-  if (!email || !senha) {
-    alert("Preencha todos os campos");
-    return;
-  }
-
-  await login();
-}
 
   return (
     <Background>
@@ -115,7 +124,7 @@ async function login() {
             />
 
             <TouchableOpacity
-            onPress={()=> navigation.navigate("TelaEsqueceSenha")}
+              onPress={() => navigation.navigate("TelaEsqueceSenha")}
             >
               <Text style={style.forgot}>Esqueceu a senha?</Text>
             </TouchableOpacity>
@@ -130,7 +139,7 @@ async function login() {
         {/* TERMOS */}
         <View style={style.terms}>
           <Text>
-            Ao continuar, você concorda com nossos{" "}
+            Ao continuing, você concorda com nossos{" "}
             <Text style={style.link}>Termos</Text> e{" "}
             <Text style={style.link}>Privacidade</Text>
           </Text>
