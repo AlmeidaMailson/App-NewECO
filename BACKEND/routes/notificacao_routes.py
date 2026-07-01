@@ -62,3 +62,11 @@ def marcar_todas_como_lidas(
 
     service = NotificacaoService(db)
     return service.limpar_notificacoes_pendentes(usuario_id)
+
+@router.get("/", response_model=list[NotificacaoResponse])
+def listar_minhas_notificacoes(
+    db: Session = Depends(get_db),
+    usuario_logado: Usuario = Depends(obter_usuario_atual)
+):
+    service = NotificacaoService(db)
+    return service.obter_notificacoes_usuario(usuario_logado.id)

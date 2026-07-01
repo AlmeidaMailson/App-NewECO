@@ -41,3 +41,8 @@ def list_seguindo_repository(db, usuario_id):
     return db.query(Seguidor).filter(
         Seguidor.seguidor_id == usuario_id
     ).all()
+
+def list_ids_seguindo_repository(db, usuario_id):
+    return db.query(Seguidor).filter(
+        Seguidor.seguidor_id == usuario_id
+    ).all()

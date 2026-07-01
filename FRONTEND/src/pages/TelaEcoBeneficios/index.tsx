@@ -6,7 +6,6 @@ import { theme } from "../../global/themes";
 import UserSession from "../../utils/UserSessions";
 import { styles } from "./style";
 
-// 🟢 MUDANÇA AQUI: Importando a nossa instância autenticada
 import api from "../../config/api";
 
 const actions = [
@@ -28,39 +27,32 @@ const actions = [
 ];
 
 interface TransacaoHistorico {
-  id: string;
-  title: string; // ou 'descricao' conforme o seu modelo do banco
-  date: string;  // ou 'criado_em'
-  points: string; // ex: "+50" ou "-100"
+  id: number;
+  descricao: string;
+  criado_em: string;
+  pontos: number;
+  tipo: "CREDITO" | "DEBITO";
 }
-
 export default function TelaEcoBeneficios() {
   const navigation = useNavigation();
   
   // Estados dinâmicos para substituir os mocks
+  const [saldoTotal, setSaldoTotal] = useState(0);
   const [ecoBeneficios, setEcoBeneficios] = useState(0);
   const [historyList, setHistoryList] = useState<TransacaoHistorico[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🟢 useFocusEffect recarrega os pontos toda vez que a tela ganha foco
+  // useFocusEffect recarrega os pontos toda vez que a tela ganha foco
   useFocusEffect(
     React.useCallback(() => {
       async function carregarDadosEco() {
         try {
-          // 1. Busca os dados de saldo e perfil atualizados do usuário logado
-          // O JWT no interceptor garante que o back sabe quem é o usuário
-          const userResponse = await api.get("/users/me"); 
-          setEcoBeneficios(userResponse.data?.ecoBeneficios ?? 0);
-
-          // Atualiza também o Singleton local para manter o app em sincronia
-          if (userResponse.data) {
-            UserSession.getInstance().setUser(userResponse.data);
-          }
-
-          // 2. Busca o histórico de transações/extrato de pontos do usuário
-          // Adapte essa rota para bater exatamente com o seu router do FastAPI (ex: /usuarios/extrato)
+          //  Busca o histórico de transações/extrato de pontos do usuário
           const historyResponse = await api.get("/users/me/extrato-pontos");
-          setHistoryList(historyResponse.data ?? []);
+          console.log(historyResponse.data);
+
+          setHistoryList(historyResponse.data.historico);
+          setSaldoTotal(historyResponse.data.saldo_total);
 
         } catch (error: any) {
           console.log("Erro ao buscar dados ecológicos:", error.response?.data || error.message);
@@ -98,7 +90,7 @@ export default function TelaEcoBeneficios() {
           {/* CARD DE SALDO */}
           <View style={styles.balanceCard}>
             <Text style={styles.balanceLabel}>Seu saldo atual</Text>
-            <Text style={styles.balanceValue}>{ecoBeneficios}</Text>
+            <Text style={styles.balanceValue}>{saldoTotal}</Text>
             <Text style={styles.balanceText}>
               Use seus EcoPontos para desbloquear benefícios e acompanhar seu impacto.
             </Text>
@@ -130,24 +122,32 @@ export default function TelaEcoBeneficios() {
             </Text>
           ) : (
             historyList.map((item) => {
-              const isNegative = String(item.points).startsWith("-");
-              return (
-                <View key={item.id} style={styles.historyItem}>
-                  <View>
-                    <Text style={styles.historyTitle}>{item.title}</Text>
-                    <Text style={styles.historyDate}>{item.date}</Text>
-                  </View>
-                  <Text
-                    style={[
-                      styles.historyPoints,
-                      isNegative && styles.historyPointsNegative,
-                    ]}
-                  >
-                    {item.points}
-                  </Text>
-                </View>
-              );
-            })
+    const isNegative = item.tipo === "DEBITO";
+
+    return (
+        <View key={item.id} style={styles.historyItem}>
+            <View>
+                <Text style={styles.historyTitle}>
+                    {item.descricao}
+                </Text>
+
+                <Text style={styles.historyDate}>
+                    {new Date(item.criado_em).toLocaleDateString("pt-BR")}
+                </Text>
+            </View>
+
+            <Text
+                style={[
+                    styles.historyPoints,
+                    isNegative && styles.historyPointsNegative,
+                ]}
+            >
+                {isNegative ? "-" : "+"}
+                {item.pontos}
+            </Text>
+        </View>
+    );
+})
           )}
         </ScrollView>
       )}

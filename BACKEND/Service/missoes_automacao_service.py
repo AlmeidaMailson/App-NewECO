@@ -1,65 +1,102 @@
 import random
 from sqlalchemy.orm import Session
+
 from models.mapa_verde import MapaVerdePonto
 from models.missoes import Missao
-from Repository.missoes_repository import missao_repository 
+from Repository.missoes_repository import missao_repository
 
-# Templates que o robô vai usar para criar os desafios
 TEMPLATES_MISSOES = [
     {
         "titulo": "Guerreiro do Plástico",
-        "descricao": "Vai até ao ponto '{ponto_nome}' e descarta pelo menos 5 garrafas PET para reciclagem.",
-        "recompensa": 50,
+        "descricao": "Vá até ao ponto '{ponto_nome}' e descarte pelo menos 5 garrafas PET para reciclagem.",
         "tema": "Plástico"
     },
     {
-        "titulo": "Descarte Eletrónico Consciente",
-        "descricao": "Leva pilhas ou cabos velhos que tens em casa até ao '{ponto_nome}'.",
-        "recompensa": 80,
-        "tema": "Eletrónicos"
+        "titulo": "Descarte Eletrônico Consciente",
+        "descricao": "Leve pilhas ou cabos velhos até '{ponto_nome}'.",
+        "tema": "Eletrônicos"
     },
     {
         "titulo": "Mestre do Vidro",
-        "descricao": "Ajuda a comunidade descartando recipientes de vidro de forma segura no '{ponto_nome}'.",
-        "recompensa": 60,
+        "descricao": "Descarte recipientes de vidro corretamente em '{ponto_nome}'.",
         "tema": "Vidro"
+    },
+    {
+        "titulo": "Herói do Papel",
+        "descricao": "Leve jornais e papelão para reciclagem em '{ponto_nome}'.",
+        "tema": "Papel"
+    },
+    {
+        "titulo": "Recicle o Metal",
+        "descricao": "Descarte latinhas e outros metais em '{ponto_nome}'.",
+        "tema": "Metal"
+    },
+    {
+        "titulo": "Óleo Consciente",
+        "descricao": "Leve óleo de cozinha usado para o ponto '{ponto_nome}'.",
+        "tema": "Óleo"
     }
 ]
 
+
 class MissoesAutomacaoService:
-    
+
     def rodar_gerador_automatico(self, db: Session):
-        # 1. Procura todos os pontos do mapa que estão ativos no banco (os 70 que importaste!)
-        pontos_disponiveis = db.query(MapaVerdePonto).filter(MapaVerdePonto.ativo == True).all()
 
-        if not pontos_disponiveis:
-            return {"status": "erro", "mensagem": "Nenhum ponto do mapa ativo encontrado no banco de dados."}
-
-        # 2. Sorteia UM ponto real de Brasília e UM template da lista
-        ponto_sorteado = random.choice(pontos_disponiveis)
-        template_sorteado = random.choice(TEMPLATES_MISSOES)
-
-        # 3. Monta a descrição trocando o marcador pelo nome real do ponto ecológico
-        descricao_final = template_sorteado["descricao"].format(ponto_nome=ponto_sorteado.nome)
-
-        # 4. Instancia o modelo da Missão
-        nova_missao = Missao(
-            titulo=template_sorteado["titulo"],
-            descricao=descricao_final,
-            recompensa=template_sorteado["recompensa"],
-            total_acoes=1,
-            local=ponto_sorteado.nome,
-            tema=template_sorteado["tema"],
-            mapa_verde_ponto_id=ponto_sorteado.id,
-            ativo=True
+        pontos = (
+            db.query(MapaVerdePonto)
+            .filter(MapaVerdePonto.ativo == True)
+            .all()
         )
 
-        # 5. O Repository entra em ação para gravar no banco
-        missao_salva = missao_repository.salvar_missao(db, nova_missao)
+        if not pontos:
+            return {
+                "status": "erro",
+                "mensagem": "Nenhum ponto ativo encontrado."
+            }
+
+        missoes_criadas = 0
+
+        for ponto in pontos:
+
+            template = random.choice(TEMPLATES_MISSOES)
+
+            existe = missao_repository.existe_missao_ativa(
+    db,
+    template["titulo"],
+    ponto.nome
+)
+            if existe:
+                continue
+
+            recompensa = random.randint(30, 200)
+
+            total_acoes = random.randint(1, 5)
+
+            descricao = template["descricao"].format(
+                ponto_nome=ponto.nome
+            )
+
+            nova_missao = Missao(
+                titulo=template["titulo"],
+                descricao=descricao,
+                recompensa=recompensa,
+                total_acoes=total_acoes,
+                local=ponto.nome,
+                tema=template["tema"],
+                mapa_verde_ponto_id=ponto.id,
+                ativo=True
+            )
+
+            missao_repository.salvar_missao(db, nova_missao)
+
+            missoes_criadas += 1
 
         return {
-            "status": "sucesso", 
-            "mensagem": f"Missão '{missao_salva.titulo}' gerada automaticamente no ponto '{ponto_sorteado.nome}'!"
+            "status": "sucesso",
+            "missoes_criadas": missoes_criadas,
+            "mensagem": f"{missoes_criadas} missões foram geradas automaticamente."
         }
+
 
 missoes_automacao_service = MissoesAutomacaoService()

@@ -10,7 +10,7 @@ from core.security import SECRET_KEY, ALGORITHM
 # Diz ao FastAPI para procurar o token na rota '/auth/login' ou no header Authorization
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-def obter_usuario_atual(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Usuario:
+def obter_usuario_atual(token: int = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Usuario:
     excecao_credenciais = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Não foi possível validar as credenciais.",
@@ -19,7 +19,7 @@ def obter_usuario_atual(token: str = Depends(oauth2_scheme), db: Session = Depen
     try:
         # Decodifica o token recebido do Front-end
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        usuario_id: str = payload.get("sub") # O 'sub' costuma guardar o ID do usuário
+        usuario_id: int = payload.get("sub") # O 'sub' costuma guardar o ID do usuário
         if usuario_id is None:
             raise excecao_credenciais
     except jwt.PyJWTError:

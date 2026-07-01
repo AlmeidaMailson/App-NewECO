@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.depedencies import get_db 
 import Service.conversas_service as conversas_service
+import Service.seguidores_service as seguidores_service
 
 #  Importa a dependência do token JWT e o modelo de Usuário
 from core.deps import obter_usuario_atual
@@ -18,9 +19,10 @@ def listar_conversas(
     db: Session = Depends(get_db),
     usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
 ):
+    
     try:
         #  SAFEVOTE: Agora passamos o ID direto do usuário autenticado pelo token
-        conversas = conversas_service.listar_conversas_ativas_do_usuario(db, usuario_logado.id)
+        conversas = seguidores_service.list_ids_seguindo_repository(db, usuario_logado.id)
         return conversas
     
     except HTTPException as http_err:
@@ -33,3 +35,15 @@ def listar_conversas(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Ocorreu um erro interno ao processar as conversas."
         )
+    
+@router.post("/iniciar")
+def iniciar_conversa(
+     usuario_destino_id: int,
+     db: Session = Depends(get_db),
+     usuario_logado: Usuario = Depends(obter_usuario_atual),
+     ):
+    return conversas_service.iniciar_conversa(
+        db,
+        usuario_logado.id,
+        usuario_destino_id,
+    )

@@ -19,24 +19,38 @@ def create_conversa_repository(db, dados_conversa):
          db.rollback()
          raise
 
-def get_conversas_usuario_repository(db, usuario_1_id, limit=50):
-    seguindo_subquery = (
-        select(Seguidor.seguindo_id)
-        .filter(Seguidor.seguidor_id == usuario_1_id)
-        .scalar_subquery()
-    ) 
-    stmt = (
-        select(conversa).filter(
-            #conversa.aberto == True, ==>YAGNI (You Aren't Gonna Need It — Você não vai precisar disso agora).
+def get_conversas_usuario_repository(db, usuario_id, limit=50):
+
+    return (
+        db.query(conversa)
+        .filter(
             or_(
-                and_(conversa.usuario_1_id == usuario_1_id, conversa.usuario_2_id.in_(seguindo_subquery)),
-                and_(conversa.usuario_2_id==usuario_1_id, conversa.usuario_1_id.in_(seguindo_subquery))
-            )  
+                conversa.usuario_1_id == usuario_id,
+                conversa.usuario_2_id == usuario_id,
+            )
         )
         .order_by(conversa.criado_em.desc())
-            .limit(limit) 
+        .limit(limit)
+        .all()
     )
-    result = db.execute(stmt) 
-    return result.scalars().all()
 
+
+def buscar_conversa_existente(db, usuario_1_id: int, usuario_2_id: int):
+
+    return (
+        db.query(conversa)
+        .filter(
+            or_(
+                and_(
+                    conversa.usuario_1_id == usuario_1_id,
+                    conversa.usuario_2_id == usuario_2_id,
+                ),
+                and_(
+                    conversa.usuario_1_id == usuario_2_id,
+                    conversa.usuario_2_id == usuario_1_id,
+                ),
+            )
+        )
+        .first()
+    )
 

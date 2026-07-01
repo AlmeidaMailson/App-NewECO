@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from Repository.repository_mensagens import mensagem_repository
 from schemas.mensagens_schema import MensagemCreate
 from fastapi import HTTPException, status
+from Repository.repository_mensagens import marcar_mensagens_como_lidas
 
 class MensagemService:
     
@@ -35,3 +36,11 @@ class MensagemService:
         return lista_mensagens
 
 mensagens_service = MensagemService()
+
+def visualizar_conversa(db, conversa_id: int, usuario_id: int):
+
+    marcar_mensagens_como_lidas(
+        db,
+        conversa_id,
+        usuario_id
+    )

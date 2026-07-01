@@ -10,21 +10,26 @@ import {
   ActivityIndicator,
   Alert
 } from "react-native";
-import { Video, ResizeMode } from "expo-av";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { VideoView, useVideoPlayer } from "expo-video";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { style } from "./style";
 import { feedObserver } from "../../utils/FeedObserver";
-
-
+import UserSession from "../../utils/UserSessions"; // 🟢 Utilizando nosso Singleton estruturado
+import { RootStackParamList } from "../../routes"; // 🟢 Tipagem global de rotas
 import api from "../../config/api";
+
+type FinalizarPublicacaoRouteProp = RouteProp<RootStackParamList, "FinalizarPublicacao">;
 
 export default function FinalizarPublicacao() {
   const navigation = useNavigation<any>();
-  const route = useRoute<any>();
+  const route = useRoute<FinalizarPublicacaoRouteProp>();
   const { midia } = route.params;
+
+  const player = useVideoPlayer(midia.uri, (player) => {
+  player.loop = true;
+});
 
   const [user, setUser] = useState<any>(null);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -33,32 +38,21 @@ export default function FinalizarPublicacao() {
   const [caption, setCaption] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Carrega o usuário da sessão ativa ao montar a tela
   useEffect(() => {
-    async function loadUser() {
-      try {
-        const data = await AsyncStorage.getItem("user");
-
-        if (data) {
-          const parsed = JSON.parse(data);
-          const loggedUser = parsed?.user ?? parsed;
-          setUser(loggedUser);
-          console.log("USER LOGADO:", loggedUser);
-        } else {
-          console.log("Nenhum usuário logado");
-        }
-
-      } catch (err) {
-        console.log("Erro ao carregar usuário:", err);
-      } finally {
-        setLoadingUser(false);
+    function loadUser() {
+      const loggedUser = UserSession.getInstance().getUser();
+      if (loggedUser) {
+        setUser(loggedUser);
       }
+      setLoadingUser(false);
     }
 
     loadUser();
   }, []);
 
   async function publicar() {
-    // Validação básica antes de subir
+    // Validação básica de campos obrigatórios no Front-end
     if (!titulo.trim() || !caption.trim()) {
       Alert.alert("Atenção", "Preencha o título e a legenda do seu post!");
       return;
@@ -67,40 +61,53 @@ export default function FinalizarPublicacao() {
     try {
       setLoading(true);
 
-      // multipart form data normalmente para carregar a foto/vídeo
+      // Instancia o FormData para envio de arquivos binários (Multipart)
       const formData = new FormData();
 
-      // 🟢 REMOVIDO: formData.append("usuario_id", ...) -> O backend descobre quem posta pelo Token JWT!
+      // 1. Campos de texto mapeados com o backend
       formData.append("titulo", titulo);
       formData.append("legenda", caption);
 
+      //  Adicionado o campo obrigatório que o Pydantic exige
+      const tipoMidiaValor = midia.mediaType === "video" ? "video" : "image";
+      formData.append("tipo_midia", tipoMidiaValor);
+
+      // 2. Anexando o arquivo binário bruto de forma correta
+      // Chave alterada para 'file' (padrão FastAPI UploadFile)
       formData.append("midia_url", {
         uri: midia.uri,
         name: midia.mediaType === "video" ? "video.mp4" : "post.jpg",
         type: midia.mediaType === "video" ? "video/mp4" : "image/jpeg",
       } as any);
 
-      console.log("Enviando publicação via Axios (Multipart Form Data)...");
-
-      // instância 'api' injetando o cabeçalho 'multipart/form-data'
-      const response = await api.post("/posts/", formData, {
+      // Requisição POST injetando o cabeçalho multipart/form-data
+      await api.post("/posts/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      console.log("STATUS:", response.status);
-      console.log("RESPOSTA:", response.data);
-
       Alert.alert("Sucesso", "Publicação compartilhada com a comunidade!");
+
+      // Notifica a TelaHome (via padrão Observer) para recarregar o feed automaticamente
       feedObserver.notify();
+
       navigation.navigate("TelaHome");
 
     } catch (error: any) {
-      console.log("ERRO AO PUBLICAR:", error.response?.data || error.message);
-      
-      const erroServidor = error.response?.data?.detail ?? "Não foi possível salvar o seu post.";
-      Alert.alert("Erro ao publicar", erroServidor);
+      //Log detalhado que abre o erro de validação (Array loc) do Pydantic no terminal
+      if (error.response) {
+        console.log("ERRO DETALHADO DO FASTAPI (422/500):", JSON.stringify(error.response.data, null, 2));
+      } else {
+        console.log("ERRO NA REQUISIÇÃO:", error.message);
+      }
+
+      const erroServidor = error.response?.data?.detail;
+      const mensagemErro = typeof erroServidor === "string"
+        ? erroServidor
+        : "Verifique os dados preenchidos ou o tamanho do arquivo.";
+
+      Alert.alert("Erro ao publicar", mensagemErro);
     } finally {
       setLoading(false);
     }
@@ -129,21 +136,27 @@ export default function FinalizarPublicacao() {
       </View>
 
       <View style={style.mediaBox}>
-        {midia.mediaType === "video" ? (
-          <Video
-            source={{ uri: midia.uri }}
-            style={style.media}
-            useNativeControls
-            resizeMode={ResizeMode.COVER}
-          />
-        ) : (
-          <Image source={{ uri: midia.uri }} style={style.media} />
-        )}
+    {midia.mediaType === "video" ? (
+  <VideoView
+    player={player}
+    style={style.media}
+    nativeControls
+    contentFit="cover"
+    allowsFullscreen
+    allowsPictureInPicture
+  />
+) : (
+  <Image
+    source={{ uri: midia.uri }}
+    style={style.media}
+    resizeMode="cover"
+  />
+)}
       </View>
 
       <TextInput
         style={style.input}
-        placeholder="Título"
+        placeholder="Título do Post"
         placeholderTextColor="#999"
         value={titulo}
         onChangeText={setTitulo}
@@ -151,10 +164,11 @@ export default function FinalizarPublicacao() {
 
       <TextInput
         style={style.input}
-        placeholder="Legenda"
+        placeholder="Escreva uma legenda sobre sustentabilidade..."
         placeholderTextColor="#999"
         value={caption}
         onChangeText={setCaption}
+        multiline
       />
 
       <TouchableOpacity
@@ -165,7 +179,7 @@ export default function FinalizarPublicacao() {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={style.buttonText}>Publicar</Text>
+          <Text style={style.buttonText}>Publicar no NewEco</Text>
         )}
       </TouchableOpacity>
     </KeyboardAvoidingView>

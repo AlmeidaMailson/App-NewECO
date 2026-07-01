@@ -15,7 +15,7 @@ import { RootStackParamList } from "../../routes";
 import { theme } from "../../global/themes";
 import { styles } from "./style";
 
-// 🟢 CORREÇÃO: Centralização segura de chamadas de API e Sessão
+// Centralização segura de chamadas de API e Sessão
 import api from "../../config/api";
 import UserSession from "../../utils/UserSessions";
 
@@ -48,7 +48,7 @@ export default function TelaAdicionarUsuario() {
   const [chatOnly, setChatOnly] = useState<string[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
 
-  // 🟢 Resgata o ID do usuário logado de forma síncrona e limpa usando o Singleton
+  //  Resgata o ID do usuário logado de forma síncrona e limpa usando o Singleton
   const loggedUserId = UserSession.getInstance().getUser()?.id;
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function TelaAdicionarUsuario() {
 
       try {
         // 1. Carrega todos os usuários da plataforma (Passando pelo prefixo /auth configurado no FastAPI)
-        const responseUsers = await api.get("/auth/users");
+        const responseUsers = await api.get("/users");
         const databaseUsers: BackendUser[] = responseUsers.data ?? [];
 
         // Filtra para remover o próprio usuário logado da lista de descoberta
@@ -69,11 +69,14 @@ export default function TelaAdicionarUsuario() {
         );
         setUsers(usersWithoutLoggedUser);
 
-        // 2. 🟢 OTIMIZAÇÃO: Busca quem você segue de uma vez só, sem fazer loops infinitos
-        const responseFollowing = await api.get(`/seguidores/usuario/${loggedUserId}`);
-        // Supondo que o back devolva uma lista de IDs ou objetos com id_seguido
-        const idsSeguindo = responseFollowing.data.map((f: any) => String(f.id_seguido || f.id));
-        setFollowing(idsSeguindo);
+        //  Busca quem você segue de uma vez só, sem fazer loops infinitos
+        const responseFollowing = await api.get("/seguidores/seguindo");
+
+const idsSeguindo = responseFollowing.data.map(
+    (item: any) => String(item.seguindo_id)
+);
+
+setFollowing(idsSeguindo);
 
       } catch (error: any) {
         console.log("Erro na tela de descoberta:", error.message);
@@ -130,7 +133,10 @@ export default function TelaAdicionarUsuario() {
 
       // Follow
       await api.post("/seguidores/", {
+        seguidor_id: loggedUserId,
         seguindo_id: id
+
+
       });
 
       setFollowing((current) => [...current, userId]);
@@ -145,7 +151,7 @@ export default function TelaAdicionarUsuario() {
   const startChat = (id: number) => {
     const userId = String(id);
     setChatOnly((current) => (current.includes(userId) ? current : [...current, userId]));
-    navigation.navigate("Conversa");
+    navigation.navigate("TelaHome");
   };
 
   const openProfile = (user: BackendUser) => {
@@ -214,19 +220,7 @@ export default function TelaAdicionarUsuario() {
               )}
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.chatButton, hasChat && styles.chatButtonActive]}
-              onPress={() => startChat(item.id)}
-            >
-              <Ionicons
-                name="chatbubble-ellipses-outline"
-                size={17}
-                color={hasChat ? "#fff" : theme.colors.primaryLight}
-              />
-              <Text style={[styles.chatButtonText, hasChat && styles.chatButtonTextActive]}>
-                Conversar
-              </Text>
-            </TouchableOpacity>
+        
           </View>
         </View>
       </View>
@@ -256,14 +250,14 @@ export default function TelaAdicionarUsuario() {
         </View>
 
         <View style={styles.filters}>
-          {(["todos", "seguir", "conversar"] as Filter[]).map((item) => (
+          {(["todos", "seguir", "seguindo" ] as Filter[]).map((item) => (
             <TouchableOpacity
               key={item}
               style={[styles.filterButton, filter === item && styles.filterButtonActive]}
               onPress={() => setFilter(item)}
             >
               <Text style={[styles.filterText, filter === item && styles.filterTextActive]}>
-                {item === "todos" ? "Todos" : item === "seguir" ? "Seguir" : "Conversar"}
+                {item === "todos" ? "Todos" : item === "seguir" ? "Seguir" : "seguindo"}
               </Text>
             </TouchableOpacity>
           ))}

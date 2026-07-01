@@ -266,4 +266,20 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 13,
   },
+    logout: {
+    marginHorizontal: 20,
+    marginTop: 30,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+    backgroundColor: theme.colors.primaryDark,
+  },
+  logoutText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });

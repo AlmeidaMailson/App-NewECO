@@ -9,9 +9,10 @@ export const style = StyleSheet.create({
   },
 
   logo: {
-    width: 180,
-    height: 180,
-    marginBottom: 10,
+    width: 250,
+    height: 250,
+    marginBottom: 120,
+    top: 80
   },
 
   perfil: {

@@ -1,6 +1,10 @@
 from fastapi import HTTPException, status
 from Repository.repository_conversas import get_conversas_usuario_repository
+from Repository.repository_conversas import create_conversa_repository
+from Repository.repository_conversas import buscar_conversa_existente
+
 import Repository.user_repository as user_repository
+import Repository.seguidores_repository as seguidores_repository
 
 
 def listar_conversas_ativas_do_usuario(db, usuario_id: int):
@@ -21,7 +25,9 @@ def listar_conversas_ativas_do_usuario(db, usuario_id: int):
     conversas_banco =get_conversas_usuario_repository(db, usuario_id)
     
     if not conversas_banco:
-        return []  # Retorna uma lisata vazia se não houver conversas ativas
+        return []
+    else:
+        return seguidores_repository # Retorna uma lisata vazia se não houver conversas ativas
     
     # 3. Formatação dos dados (DTO / Data Transfer Object)
     conversas_formatadas = []
@@ -42,9 +48,27 @@ def listar_conversas_ativas_do_usuario(db, usuario_id: int):
             "usuario": {
                 "id": outro_usuario.id,
                 "nome": outro_usuario.nome,          # Nome que você pediu
-                "foto_perfil": outro_usuario.avata_url # URL da foto que você pediu
+                "foto_perfil": outro_usuario.avatar_url # URL da foto que você pediu
             }
         })
         
     return conversas_formatadas
+
+def iniciar_conversa(db, usuario_logado_id: int, usuario_destino_id: int):
+
+    conversa = buscar_conversa_existente(
+        db,
+        usuario_logado_id,
+        usuario_destino_id,
+    )
+
+    if conversa:
+        return conversa
+
+    dados = {
+        "usuario_1_id": usuario_logado_id,
+        "usuario_2_id": usuario_destino_id,
+    }
+
+    return create_conversa_repository(db, dados)
 

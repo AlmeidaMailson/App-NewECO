@@ -9,39 +9,46 @@ import { RootStackParamList } from "../../routes";
 import UserSession from "../../utils/UserSessions";
 import { style } from "./style";
 
-// 🟢 MUDANÇA AQUI: Trazendo a nossa instância autenticada da API
+//  Trazendo a nossa instância autenticada da API
 import api from "../../config/api";
 
-type NavigationProps = NativeStackNavigationProp<RootStackParamList, "TelaHome">;
+type NavigationProps = NativeStackNavigationProp<
+  RootStackParamList,
+  "TelaHome"
+>;
 
 export default function TelaHome() {
   const navigation = useNavigation<NavigationProps>();
-  
+
   // Estados dinâmicos para gerenciar os dados em tempo real
   const [nomeUsuario, setNomeUsuario] = useState("Eco amigo");
   const [ecoBeneficios, setEcoBeneficios] = useState(0);
-  const [refreshFeed, setRefreshFeed] = useState(0); // Gatilho para atualizar o feed interno
-
-  // 🟢 useFocusEffect recarrega os dados do usuário toda vez que ele volta para a Home
+  const [refreshFeed, setRefreshFeed] = useState(0);
+  const [saldoTotal, setSaldoTotal] = useState(0);
+  //  useFocusEffect recarrega os dados do usuário toda vez que ele volta para a Home
   useFocusEffect(
     React.useCallback(() => {
       async function buscarDadosPerfil() {
         try {
-          // Rota protegida por Token que busca as infos atualizadas do usuário logado
-          const response = await api.get("/auth/users/me"); // Ajuste o endpoint conforme seu back
-          
+          // Removido o prefixo "/auth" se o seu FastAPI estiver configurado sem ele
+          const response = await api.get("/users/me");
+
           if (response.data) {
             setNomeUsuario(response.data.nome);
             setEcoBeneficios(response.data.ecoBeneficios ?? 0);
-            
-            // Sincroniza também no Singleton da sessão do app
+
             UserSession.getInstance().setUser({
               ...UserSession.getInstance().getUser(),
-              ...response.data
+              ...response.data,
             });
           }
+
+          const extrato = await api.get("/carteira/extrato");
+
+          console.log(extrato.data);
+
+          setSaldoTotal(extrato.data.saldo_total);
         } catch (error: any) {
-          console.log("Erro ao sincronizar saldo na Home:", error.message);
           // Fallback seguro usando a sessão local em memória caso a API falhe temporariamente
           const localUser = UserSession.getInstance().getUser();
           setNomeUsuario(localUser?.nome ?? "Eco amigo");
@@ -51,8 +58,8 @@ export default function TelaHome() {
 
       buscarDadosPerfil();
       // Incrementa o gatilho para forçar o componente <FeedScreen /> a recarregar as postagens
-      setRefreshFeed(prev => prev + 1); 
-    }, [])
+      setRefreshFeed((prev) => prev + 1);
+    }, []),
   );
 
   return (
@@ -61,15 +68,15 @@ export default function TelaHome() {
       <View style={style.header}>
         <View>
           <Text style={style.greeting}>Olá, {nomeUsuario}</Text>
-          <Text style={style.subText}>
-            {ecoBeneficios} EcoBenefícios
-          </Text>
+          <Text style={style.subText}>{saldoTotal} EcoBenefícios</Text>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate("TelaNotificacao")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("TelaNotificacao")}
+        >
           <Ionicons
             name="notifications"
-            size={26}
+            size={40}
             color={theme.colors.primaryDark}
           />
         </TouchableOpacity>
@@ -110,11 +117,17 @@ export default function TelaHome() {
 
       {/* MENU INFERIOR */}
       <View style={style.bottomMenu}>
-        <TouchableOpacity onPress={() => navigation.navigate("TelaMensagem")}>
-          <AntDesign name="message" size={26} color={theme.colors.primaryDark} />
+        <TouchableOpacity
+          onPress={() => navigation.navigate("TelaAdicionarUsuario")}
+        >
+          <AntDesign
+            name="user-add"
+            size={26}
+            color={theme.colors.primaryDark}
+          />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setRefreshFeed(prev => prev + 1)}>
+        <TouchableOpacity onPress={() => setRefreshFeed((prev) => prev + 1)}>
           <Ionicons name="home" size={28} color={theme.colors.primaryLight} />
         </TouchableOpacity>
 

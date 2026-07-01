@@ -15,6 +15,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { theme } from "../../global/themes";
+import { VideoView, useVideoPlayer } from "expo-video";
 
 //  MUDANÇA AQUI: Importando nossa instância autenticada e removendo o axios puro
 import api, { API_URL } from "../../config/api"; 
@@ -41,6 +42,15 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
   const mediaUrl = post.midia_url?.startsWith("http")
     ? post.midia_url
     : `${API_URL}/uploads/${caminhoLimpo}`;
+
+const isVideo = post.tipo_midia === "video";
+
+const player = useVideoPlayer(
+  isVideo ? mediaUrl : null,
+  (player) => {
+    player.loop = false;
+  }
+);
 
   const isOwner = Number(loggedUser?.id) === Number(post.usuario_id);
 
@@ -173,10 +183,6 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
     <View style={styles.card}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.profileArea} onPress={openProfile}>
-          <Image
-            source={{ uri: profile.avatar_url ?? `https://i.pravatar.cc/150?u=${profile.id}` }}
-            style={styles.avatar}
-          />
 
           <View>
             <Text style={styles.username}>{profile.nome}</Text>
@@ -197,14 +203,20 @@ export default function PostCard({ post, loggedUser, onChanged, canDelete = fals
         )}
       </View>
 
-      {post.tipo_midia === "imagem" ? (
-        <Image source={{ uri: mediaUrl }} style={styles.image} />
-      ) : (
-        <View style={styles.mediaPlaceholder}>
-          <Ionicons name="play-circle-outline" size={42} color={theme.colors.primaryDark} />
-          <Text style={styles.mediaPlaceholderText}>Midia publicada</Text>
-        </View>
-      )}
+ {post.tipo_midia === "imagem" ? (
+    <Image
+        source={{ uri: mediaUrl }}
+        style={styles.image}
+        resizeMode="cover"
+    />
+) : (
+    <VideoView
+        player={player}
+        style={styles.image}
+        nativeControls
+        contentFit="cover"
+    />
+)}
 
       <View style={styles.actions}>
         <View style={styles.left}>

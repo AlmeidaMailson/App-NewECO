@@ -2,6 +2,10 @@ import os
 import uuid
 
 from fastapi import HTTPException
+from pathlib import Path
+
+from Service.notificacao_service import NotificacaoService
+from schemas.notificacao_schemas import NotificacaoCriarSchema
 
 from Repository.post_repository import (
     count_comentarios_repository,
@@ -45,20 +49,19 @@ def create_post(db, titulo, legenda, usuario_id, midia):
     else:
         tipo_midia = "desconhecido"
 
-    pasta = "uploads/post"
-    os.makedirs(pasta, exist_ok=True)
-
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    UPLOAD_DIR = BASE_DIR / "uploads" / "post"
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     nome_unico = f"{uuid.uuid4()}{extensao}"
-    caminho = os.path.join(pasta, nome_unico).replace("\\", "/")
-
-    with open(caminho, "wb") as buffer:
+    caminho_arquivo = UPLOAD_DIR / nome_unico
+    with open(caminho_arquivo, "wb") as buffer:
         buffer.write(midia.file.read())
 
     dados_post = {
         "titulo": titulo,
         "legenda": legenda,
         "usuario_id": usuario_id,
-        "midia_url": caminho,
+        "midia_url": f"post/{nome_unico}",
         "tipo_midia": tipo_midia
     }
 
@@ -148,7 +151,26 @@ def curtir_post(db, post_id, usuario_id):
         curtido = False
     else:
         create_curtida_repository(db, post_id, usuario_id)
-        curtido = True
+        curtido = True,
+    
+    if post.usuario_id != usuario_id:
+         usuario = db.query(User).filter(User.id == usuario_id).first()
+         if not usuario:
+             raise HTTPException(
+                 status_code=404,
+                 detail="Usuário não encontrado"
+                 )
+         
+         NotificacaoService(db).disparar_notificacao(
+            NotificacaoCriarSchema(
+            usuario_id=post.usuario_id,
+            remetente_id=usuario_id,
+            post_id=post.id,
+            titulo="Nova curtida",
+            mensagem=f"{usuario.nome} Curtiu sua publicação.",
+            tipo="CURTIDA"
+        )
+    )
 
     return {
         "curtido": curtido,
@@ -156,7 +178,7 @@ def curtir_post(db, post_id, usuario_id):
     }
 
 def comentar_post(db, post_id, usuario_id, texto):
-    validar_post_e_usuario(db, post_id, usuario_id)
+    post = validar_post_e_usuario(db, post_id, usuario_id)
 
     texto_limpo = texto.strip()
 
@@ -171,6 +193,25 @@ def comentar_post(db, post_id, usuario_id, texto):
         post_id=post_id,
         usuario_id=usuario_id,
         texto=texto_limpo
+    )
+    if post.usuario_id != usuario_id:
+        if post.usuario_id != usuario_id:
+         usuario = db.query(User).filter(User.id == usuario_id).first()
+         if not usuario:
+             raise HTTPException(
+                 status_code=404,
+                 detail="Usuário não encontrado"
+                 )
+        NotificacaoService(db).disparar_notificacao(
+        NotificacaoCriarSchema(
+            usuario_id=post.usuario_id,
+            remetente_id=usuario_id,
+            post_id=post.id,            
+            comentario_id=comentario.id,
+            titulo="Novo comentário",
+            mensagem=f"{usuario.nome} Comentou na sua publicação.",
+            tipo="COMENTARIO"
+        )
     )
 
     usuario = db.query(User).filter(User.id == usuario_id).first()

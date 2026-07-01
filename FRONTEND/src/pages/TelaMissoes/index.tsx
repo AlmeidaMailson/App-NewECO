@@ -5,7 +5,7 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { theme } from "../../global/themes";
 import { style } from "./style";
 
-// 🟢 CORREÇÃO: Usando a nossa instância do Axios com JWT acoplado
+// Usando a nossa instância do Axios com JWT acoplado
 import api from "../../config/api";
 import UserSession from "../../utils/UserSessions";
 

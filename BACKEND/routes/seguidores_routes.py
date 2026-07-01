@@ -7,7 +7,8 @@ from Service.seguidores_service import (
     create_seguir,
     delete_seguir,
     get_estatisticas_seguidores,
-    verificar_segue
+    verificar_segue,
+    listar_ids_seguindo
 )
 
 # Imports corretos e padronizados conforme solicitado
@@ -28,36 +29,30 @@ def estatisticas_seguidores(
 @router.get("/{seguindo_id}/status")
 def verificar_status_seguidor(
     seguindo_id: int,
-    usuario_id: int,
     db: Session = Depends(get_db),
-    usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
+    usuario_logado: Usuario = Depends(obter_usuario_atual)
 ):
-    # O comportamento continua o mesmo, mas agora com a garantia de que o usuário está autenticado
     return verificar_segue(
-        db,
+        db, 
         seguindo_id=seguindo_id,
-        usuario_id=usuario_id
+        usuario_id=usuario_logado.id
     )
 
 @router.post("/")
 def seguir_usuario(
     seguidor: SeguidorCreate,
-    usuario_id: int,
     db: Session = Depends(get_db),
-    usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
+    usuario_logado: Usuario = Depends(obter_usuario_atual)
 ):
-    # Passa exatamente os mesmos parâmetros para o seu Service
     return create_seguir(
-        db,
+        db=db,
         seguidor_id=seguidor.seguidor_id,
         seguindo_id=seguidor.seguindo_id,
-        usuario_id=usuario_logado.id #  Garante que a ação usa o ID validado pelo Token
+        usuario_id=usuario_logado.id
     )
-
 @router.delete("/{seguindo_id}")
 def deixar_de_seguir(
     seguindo_id: int,
-    usuario_id: int,
     db: Session = Depends(get_db),
     usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
 ):
@@ -66,4 +61,14 @@ def deixar_de_seguir(
         db,
         seguindo_id=seguindo_id,
         usuario_id=usuario_logado.id # Garante que a ação usa o ID validado pelo Token
+    )
+
+@router.get("/seguindo")
+def listar_seguindo(
+    db: Session = Depends(get_db),
+    usuario_logado: Usuario = Depends(obter_usuario_atual)
+):
+    return listar_ids_seguindo(
+        db,
+        usuario_logado.id
     )

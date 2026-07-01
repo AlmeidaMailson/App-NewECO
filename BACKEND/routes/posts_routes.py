@@ -71,8 +71,7 @@ async def create_post_route(
     db: Session = Depends(get_db),
     usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
 ):
-    # ❌ Removemos o `usuario_id: int = Form(...)` para evitar fraudes!
-    # O ID agora vem direto e seguro do token.
+
     return create_post(
         db,
         titulo,

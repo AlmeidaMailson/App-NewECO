@@ -30,3 +30,14 @@ class MissaoRepository:
         return nova_missao
 
 missao_repository = MissaoRepository()
+
+def existe_missao_ativa(self, db: Session, titulo: str, local: str):
+    return (
+        db.query(Missao)
+        .filter(
+            Missao.titulo == titulo,
+            Missao.local == local,
+            Missao.ativo == True
+        )
+        .first()
+    )

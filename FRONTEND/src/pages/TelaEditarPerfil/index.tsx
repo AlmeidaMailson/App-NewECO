@@ -14,14 +14,14 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // 🟢 Para salvar o novo estado do user fisicamente
-
+import AsyncStorage from "@react-native-async-storage/async-storage"; //
+import ProfileImage from "../../components/ProfileImage";
 import { RootStackParamList } from "../../routes";
 import UserSession from "../../utils/UserSessions";
 import { style } from "./style";
 
-// 🟢 MUDANÇA AQUI: Trazendo nossa instância HTTP com token injetado
-import api from "../../config/api";
+// MUDANÇA AQUI: Trazendo nossa instância HTTP com token injetado
+import api, { API_URL } from "../../config/api";
 
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -38,8 +38,11 @@ export default function TelaEditarPerfil() {
   const [email, setEmail] = useState(currentUser?.email ?? "");
   const [bio, setBio] = useState(currentUser?.bio ?? "");
   const [loading, setLoading] = useState(false);
+  const [avatarUri, setAvatarUri] = useState(
+    currentUser?.avatar_url || ""
+);
 
-  // 🟢 ENVIAR ALTERAÇÕES PARA O FASTAPI
+  // ENVIAR ALTERAÇÕES PARA O FASTAPI
   const handleSave = async () => {
     if (!name.trim() || !email.trim()) {
       Alert.alert("Atenção", "Os campos Nome e E-mail são obrigatórios.");
@@ -53,33 +56,31 @@ export default function TelaEditarPerfil() {
         nome: name,
         email: email,
         bio: bio,
+        avatar_url: avatarUri,
       };
 
-      // Dispara a requisição para a sua rota de atualização do FastAPI
-      // Alinhe o endpoint conforme configurado no seu router (ex: /users/update ou /users/me)
       const response = await api.put("/users/me", payload);
+
       
-      // O backend costuma retornar o usuário atualizado completo. 
-      // Se não retornar, mesclamos localmente com o response.data
-      const updatedUser = {
-        ...currentUser,
-        ...response.data,
-      };
 
-      // 1. Atualiza a sessão em memória (Singleton)
-      session.setUser(updatedUser);
+      const updatedUser = response.data;
 
-      // 2. Sincroniza e persiste no armazenamento do celular para o próximo App Boot
+      // Atualiza o Singleton
+      await UserSession.getInstance().setUser(updatedUser);
+
+      // Salva no AsyncStorage (caso ainda use)
       await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
 
-      Alert.alert("Sucesso", "Perfil atualizado com a comunidade NewECO!");
-      navigation.goBack();
+      Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
 
+      navigation.goBack();
     } catch (error: any) {
-      console.log("Erro ao atualizar perfil:", error.response?.data || error.message);
-      
-      const msgErro = error.response?.data?.detail ?? "Não foi possível salvar as alterações.";
-      Alert.alert("Erro ao salvar", msgErro);
+      console.log(error.response?.data || error.message);
+
+      Alert.alert(
+        "Erro",
+        error.response?.data?.detail ?? "Erro ao atualizar perfil.",
+      );
     } finally {
       setLoading(false);
     }
@@ -92,24 +93,26 @@ export default function TelaEditarPerfil() {
     >
       {/* HEADER */}
       <View style={style.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={style.iconButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={style.iconButton}
+        >
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={style.headerTitle}>Editar perfil</Text>
         <View style={style.iconButton} />
       </View>
 
-      <ScrollView contentContainerStyle={style.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={style.scroll}
+        showsVerticalScrollIndicator={false}
+      >
         {/* AVATAR BOX */}
         <View style={style.imageContainer}>
-          <Image
-            source={{ uri: currentUser?.avatarUri ?? "https://i.pravatar.cc/150?img=12" }}
-            style={style.avatar}
-          />
-          <TouchableOpacity style={style.changePhoto} onPress={() => Alert.alert("Upload", "Integração com a câmera em breve!")}>
-            <Ionicons name="camera-outline" size={18} color="#fff" />
-            <Text style={style.changePhotoText}>Alterar foto</Text>
-          </TouchableOpacity>
+          <ProfileImage
+    imageUri={avatarUri}
+    onImageSelected={setAvatarUri}
+/>
         </View>
 
         {/* INPUTS DO FORMULÁRIO */}
@@ -138,7 +141,11 @@ export default function TelaEditarPerfil() {
         </View>
 
         {/* BOTÃO SALVAR */}
-        <TouchableOpacity style={style.button} onPress={handleSave} disabled={loading}>
+        <TouchableOpacity
+          style={style.button}
+          onPress={handleSave}
+          disabled={loading}
+        >
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (

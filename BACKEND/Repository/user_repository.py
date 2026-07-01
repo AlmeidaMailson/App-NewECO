@@ -10,9 +10,9 @@ def create_user_repository(db, user):
         telefone=user.telefone,
         estado=user.estado,
         cidade=user.cidade,
-        bio=user.bio,
-        avatar_url=user.avatar_url,
-        eco_beneficios=user.eco_beneficios
+        bio=getattr(user, "bio", None),
+        avatar_url=getattr(user, "avatar_url", None),
+        eco_beneficios=getattr(user, "eco_beneficios", 0)
 
     )
 

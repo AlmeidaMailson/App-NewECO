@@ -5,7 +5,7 @@ from schemas.mensagens_schema import MensagemCreate, MensagemResponse
 from Service.mensagens_service import mensagens_service
 from typing import List
 
-# Imports corretos e padronizados conforme solicitado
+# Imports corretos e padronizados
 from core.deps import obter_usuario_atual
 from models.user import User as Usuario
 
@@ -17,7 +17,7 @@ def enviar_mensagem(
     db: Session = Depends(get_db),
     usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
 ):
-    # 🔥 SEGURANÇA MÁXIMA: O remetente SEMPRE será o usuário do Token, ignorando fraudes no JSON
+    # SEGURANÇA MÁXIMA: O remetente SEMPRE será o usuário do Token, ignorando fraudes no JSON
     usuario_logado_id = usuario_logado.id 
 
     nova_mensagem = mensagens_service.enviar_nova_mensagem(
@@ -34,8 +34,37 @@ def listar_mensagens(
     db: Session = Depends(get_db),
     usuario_logado: Usuario = Depends(obter_usuario_atual) # Rota protegida por Token
 ):
-    # Opcional, mas altamente recomendado: no seu service, valide se o `usuario_logado.id` 
-    # realmente faz parte dos participantes dessa `conversa_id` para evitar que estranhos leiam o chat.
+    # PROTEÇÃO EXTRAS CONTRA INVASÃO DE PRIVACIDADE:
+    # Chama o service para verificar se o usuário atual pertence a essa conversa antes de carregar as mensagens.
+    # Se ele não fizer parte, o próprio service ou esta validação deve barrar a requisição.
     
-    historico = mensagens_service.buscar_historico_do_chat(db=db, conversa_id=conversa_id)
+    historico = mensagens_service.buscar_historico_do_chat(
+        db=db, 
+        conversa_id=conversa_id,
+        usuario_id=usuario_logado.id  # Repassando o id do usuário para validação no service
+    )
+    
+    if historico is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não tem permissão para visualizar as mensagens deste chat."
+        )
+        
     return historico
+
+@router.patch("/{conversa_id}/visualizar")
+def visualizar_conversa(
+    conversa_id: int,
+    db: Session = Depends(get_db),
+    usuario_logado: Usuario = Depends(obter_usuario_atual)
+):
+
+    mensagens_service.visualizar_conversa(
+        db,
+        conversa_id,
+        usuario_logado.id
+    )
+
+    return {
+        "mensagem": "Mensagens marcadas como lidas."
+    }

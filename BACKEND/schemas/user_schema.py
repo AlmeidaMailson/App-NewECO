@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
+from typing import Optional
 
 #  cadastro do usuário para criação de conta
 
@@ -9,6 +10,7 @@ class UserCreate(BaseModel):
     estado: str
     cidade: str
     senha: str
+    avatar_url: str | None = None
 
 class UserResponse(BaseModel):
     id: int
@@ -44,3 +46,19 @@ class VerificarEmailSchema(BaseModel):
 class RedefinirSenhaSchema(BaseModel):
     email: EmailStr
     nova_senha: str
+
+
+class UserUpdate(BaseModel):
+    nome: Optional[str] = None
+    email: Optional[EmailStr] = None
+    telefone: Optional[str] = None
+    estado: Optional[str] = None
+    cidade: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    perfil_privado: Optional[bool] = None
+    ocultar_localizacao: Optional[bool] = None
+    status_invisivel: Optional[bool] = None
+    dois_fatores: Optional[bool] = None  # Adicionado
+    alertas_login: Optional[bool] = None  # dicionado
+    filtro_mensagens: Optional[bool] = None  # Adicionado

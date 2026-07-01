@@ -1,12 +1,16 @@
 from fastapi import HTTPException
-
 from Repository.seguidores_repository import (
     create_seguir_repository,
     delete_seguir_repository,
     get_seguir_repository,
     list_seguidores_repository,
-    list_seguindo_repository
+    list_seguindo_repository,
+    list_ids_seguindo_repository
 )
+
+from Service.notificacao_service import NotificacaoService
+from schemas.notificacao_schemas import NotificacaoCriarSchema
+
 from models.seguidores import Seguidor
 from models.user import User
 
@@ -56,7 +60,20 @@ def create_seguir(db, seguidor_id, seguindo_id, usuario_id):
         seguindo_id=seguindo_id
     )
 
-    return create_seguir_repository(db, novo_seguir)
+    seguir = create_seguir_repository(db, novo_seguir)
+
+    NotificacaoService(db).disparar_notificacao(
+        NotificacaoCriarSchema(
+            usuario_id= seguindo_id,
+            remetente_id=seguidor_id,
+            titulo="Novo Seguidor",
+            mensagem=f"{usuario.nome} começou a seguir você.",
+            tipo= "SEGUIDOR"
+        )
+    )
+
+    return seguir
+
 
 def delete_seguir(db, seguindo_id, usuario_id):
     usuario = db.query(User).filter(User.id == usuario_id).first()
@@ -113,3 +130,14 @@ def get_estatisticas_seguidores(db, usuario_id):
         "seguidores": len(seguidores),
         "seguindo": len(seguindo)
     }
+
+def listar_ids_seguindo(db, usuario_id):
+    seguindo = list_ids_seguindo_repository(db, usuario_id)
+
+    return [
+        {
+            "seguindo_id": item.seguindo_id
+        }
+        for item in seguindo
+    ]
+

@@ -58,3 +58,21 @@ class MensagemRepository:
     
 
 mensagem_repository = MensagemRepository()
+
+def marcar_mensagens_como_lidas(db, conversa_id: int, usuario_id: int):
+
+    (
+        db.query(Mensagem)
+        .filter(
+            Mensagem.conversa_id == conversa_id,
+            Mensagem.remetente_id != usuario_id,
+            Mensagem.lida == False
+        )
+        .update(
+            {"lida": True},
+            synchronize_session=False
+        )
+    )
+
+    db.commit()
+

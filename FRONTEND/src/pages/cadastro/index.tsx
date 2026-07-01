@@ -59,6 +59,8 @@ export default function Cadastro() {
         senha,
       });
 
+      console.log("Resposta do servidor:", response.data);
+
       Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
       navigation.navigate("Login");
 
@@ -87,7 +89,7 @@ export default function Cadastro() {
           {/* PERFIL */}
           <View style={style.perfil}>
             <Text style={style.title}>Crie sua conta</Text>
-            <ProfileImage />
+         
           </View>
 
           {/* FORM */}

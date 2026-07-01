@@ -6,7 +6,7 @@ class PostCreate (BaseModel):
     titulo: str
     legenda: str
     midia_url: str
-    tipo_midia: str
+    tipo_midia: str 
 
 class PostResponse(BaseModel):
     id: int
@@ -14,7 +14,6 @@ class PostResponse(BaseModel):
     titulo: str | None = None
     legenda: str | None = None
     midia_url: str | None = None
-    tipo_midia: str
 
     class Config: 
         from_attributes = True

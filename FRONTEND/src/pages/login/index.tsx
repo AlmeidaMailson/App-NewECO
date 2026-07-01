@@ -17,17 +17,13 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes";
 import UserSession from "../../utils/UserSessions";
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_URL } from "../../config/api";
+import api from "../../config/api";
 
 //  NOVO IMPORT: Armazenamento seguro para o Token JWT
 import * as SecureStore from "expo-secure-store";
 
-type NavigationProps = NativeStackNavigationProp<
-  RootStackParamList,
-  "Login"
->;
+type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Login">;
 
 export default function Login() {
   const navigation = useNavigation<NavigationProps>();
@@ -37,10 +33,10 @@ export default function Login() {
 
   async function login() {
     try {
-      const response = await axios.post(
-        `${API_URL}/users/login`,
-        { email, senha }
-      );
+      const response = await api.post("/users/login", {
+    email,
+    senha,
+});
 
       if (!response.data) {
         alert("Erro no login");
@@ -54,17 +50,18 @@ export default function Login() {
 
       // GRAVAÇÃO: Salva o Token JWT com a chave exata que o interceptador espera
       await SecureStore.setItemAsync("token_neweco", access_token);
+      // busca o usuário completo
+      const me = await api.get("/users/me");
+
+      // salva tudo na sessão
+      await UserSession.getInstance().setUser(me.data);
 
       // Mantém os seus salvamentos originais para não quebrar o resto do app
-      await AsyncStorage.setItem(
-        "user",
-        JSON.stringify(loggedUser)
-      );
+      await AsyncStorage.setItem("user", JSON.stringify(loggedUser));
 
       UserSession.getInstance().setUser(loggedUser);
 
-      navigation.replace("TelaHome"); // 🔥 melhor que navigate
-
+      navigation.replace("TelaHome");
     } catch (error: any) {
       console.log(error.response?.data || error.message);
       alert("Email ou senha inválidos");
@@ -99,9 +96,7 @@ export default function Login() {
               <Text style={style.link}>Criar uma conta</Text>
             </TouchableOpacity>
 
-            <Text style={style.subtitle}>
-              Insira seu e-mail para continuar
-            </Text>
+            <Text style={style.subtitle}>Insira seu e-mail para continuar</Text>
           </View>
 
           {/* INPUTS */}
