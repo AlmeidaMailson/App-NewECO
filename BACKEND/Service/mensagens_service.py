@@ -1,46 +1,57 @@
+from fastapi import WebSocket
 from sqlalchemy.orm import Session
-from Repository.repository_mensagens import mensagem_repository
-from schemas.mensagens_schema import MensagemCreate
-from fastapi import HTTPException, status
-from Repository.repository_mensagens import marcar_mensagens_como_lidas
+from Repository.repository_mensagens import MensagemRepository
+from core.security import criptografar_mensagem, descriptografar_mensagem
+import json
 
-class MensagemService:
-    
-    def enviar_nova_mensagem(self, db: Session, esquema_mensagem: MensagemCreate, remetente_id: int):
-        
-        if not esquema_mensagem.conversa_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Você precisa dizer em qual conversa quer colocar esse bilhete!"
-            )
-            
-        nova_mensagem = mensagem_repository.criar_mensagem(
-            db=db,
-            conversa_id=esquema_mensagem.conversa_id,
-            remetente_id=remetente_id,
-            texto_mensagem=esquema_mensagem.mensagem
-        )
-        
-        return nova_mensagem
+class ChatService:
+    def __init__(self, db: Session):
+        self.repo = MensagemRepository(db)
+        self._conexoes_ativas: dict[int, WebSocket] = {}
 
-    
-    def buscar_historico_do_chat(self, db: Session, conversa_id: int):
-        
-        if not conversa_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="ID da conversa inválido!"
-            )
-            
-        lista_mensagens = mensagem_repository.listar_mensagens_da_conversa(db, conversa_id)
-        return lista_mensagens
+    async def conectar_usuario(self, user_id: int, websocket: WebSocket):
+        await websocket.accept()
+        self._conexoes_ativas[user_id] = websocket
 
-mensagens_service = MensagemService()
+    def desconectar_usuario(self, user_id: int):
+        if user_id in self._conexoes_ativas:
+            del self._conexoes_ativas[user_id]
 
-def visualizar_conversa(db, conversa_id: int, usuario_id: int):
+    async def processar_e_enviar_mensagem(self, remetente_id: int, dados_brutos: str):
+        dados = json.loads(dados_brutos)
+        destinatario_id = int(dados["destinatario_id"])
+        texto_puro = dados["conteudo"]
 
-    marcar_mensagens_como_lidas(
-        db,
-        conversa_id,
-        usuario_id
-    )
+        texto_criptografado = criptografar_mensagem(texto_puro)
+        self.repo.salvar_mensagem(remetente_id, destinatario_id, texto_criptografado)
+
+        payload = {
+            "remetente_id": remetente_id,
+            "destinatario_id": destinatario_id,
+            "conteudo": texto_criptografado,
+            "horario": "agora"
+        }
+
+        if destinatario_id in self._conexoes_ativas:
+            await self._conexoes_ativas[destinatario_id].send_json(payload)
+        if remetente_id in self._conexoes_ativas:
+            await self._conexoes_ativas[remetente_id].send_json(payload)
+
+    # 🔴 CERTIFIQUE-SE DE QUE ESTA FUNÇÃO ESTÁ EXATAMENTE AQUI DENTRO DA CLASSE:
+    def obter_conversas_descriptografadas(self, user_id: int):
+        conversas_do_banco = self.repo.buscar_lista_conversas(user_id)
+        lista_final = []
+
+        for row in conversas_do_banco:
+            if row.ultima_mensagem:
+                msg_tratada = descriptografar_mensagem(row.ultima_mensagem)
+            else:
+                msg_tratada = "Toque para iniciar uma conversa..."
+
+            lista_final.append({
+                "contato_id": row.contato_id,
+                "contato_nome": row.contato_nome,
+                "ultima_mensagem": msg_tratada,
+                "horario": row.horario
+            })
+        return lista_final

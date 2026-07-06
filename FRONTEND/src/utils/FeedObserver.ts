@@ -5,7 +5,7 @@ class FeedObserver {
 
   // Registrar quem quer ser avisado
   subscribe(callback: CallbackFunction) {
-    // 🟢 PROTEÇÃO SÊNIOR: Evita duplicar a mesma função na lista de ouvintes
+    // PROTEÇÃO SÊNIOR: Evita duplicar a mesma função na lista de ouvintes
     if (this.observers.includes(callback)) return;
     
     this.observers.push(callback);

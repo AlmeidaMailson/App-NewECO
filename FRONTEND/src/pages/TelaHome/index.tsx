@@ -118,11 +118,11 @@ export default function TelaHome() {
       {/* MENU INFERIOR */}
       <View style={style.bottomMenu}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("TelaAdicionarUsuario")}
+          onPress={() => navigation.navigate("TelaConversa")}
         >
           <AntDesign
-            name="user-add"
-            size={26}
+            name="wechat"
+            size={28}
             color={theme.colors.primaryDark}
           />
         </TouchableOpacity>
@@ -132,7 +132,7 @@ export default function TelaHome() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate("TelaPerfil")}>
-          <Feather name="user" size={26} color={theme.colors.primaryDark} />
+          <Feather name="user" size={28} color={theme.colors.primaryDark} />
         </TouchableOpacity>
       </View>
     </View>

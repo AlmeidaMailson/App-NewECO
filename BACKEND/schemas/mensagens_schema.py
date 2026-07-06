@@ -1,21 +1,11 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from datetime import datetime
 
-
-class MensagemCreate(BaseModel):
-    remetente_id: int
-    conversa_id: int = Field(..., description="O número da caixinha da conversa")
-    mensagem: str = Field(..., min_length=1, description="O texto que o usuário digitou")
-  
-
-
-class MensagemResponse(BaseModel):
-    id: int
-    conversa_id: int
-    remetente_id: int
-    mensagem: str
-    lida: bool
-    criado_em: datetime
+class ConversaResponse(BaseModel):
+    contato_id: int
+    contato_nome: str
+    ultima_mensagem: str
+    horario: datetime
 
     class Config:
         from_attributes = True

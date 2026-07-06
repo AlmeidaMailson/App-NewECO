@@ -1,78 +1,80 @@
-import os
-from dotenv import load_dotenv
-from sqlalchemy import select 
 from sqlalchemy.orm import Session
-from models.mensagens import Mensagem
-from cryptography.fernet import Fernet
-
-#Carrega as variaveis do arquivo .env para a memoria do sistema
-load_dotenv()
-
-        #   codigo para cria a chave 
-# from cryptography.fernet import Fernet
-# print(Fernet.generate_key().decode())
-
-
-#Busca  a chave secreta que criamos e adicionamos la no arquivo .env
-CHAVE_SEC = os.getenv("CHAVE_CRIPTOGRAFIA")
-
-#  Inicializa o "cofre" (Fernet). Se esquecer de pôr no .env, ele cria uma temporária para não quebrar
-cipher = Fernet(CHAVE_SEC.encode() if CHAVE_SEC else Fernet.generate_key())
-
+from sqlalchemy import text
+from models.mensagens import Mensagem as MensagemModel
 
 class MensagemRepository:
-  
-    def criar_mensagem(self, db: Session, conversa_id: int, remetente_id: int, texto_mensagem: str):
+    def __init__(self, db: Session):
+        self.db = db
 
-        # CRIPTOGRAFA: Transforma o texto limpo em código ilegível antes de salvar
-        texto_criptografado = cipher.encrypt(texto_mensagem.encode()).decode()
-        nova_mensagem = Mensagem (
-            conversa_id = conversa_id,
-            remetente_id = remetente_id,
-            mensagem = texto_criptografado
+    def salvar_mensagem(self, remetente_id: int, destinatario_id: int, conteudo_cripto: str):
+        nova_msg = MensagemModel(
+            remetente_id=remetente_id,
+            destinatario_id=destinatario_id,
+            conteudo=conteudo_cripto
         )
-        db.add(nova_mensagem)
-        db.commit()
-        db.refresh(nova_mensagem)
-        return nova_mensagem
+        self.db.add(nova_msg)
+        self.db.commit()
+        self.db.refresh(nova_msg)
+        return nova_msg
+
+    def buscar_lista_conversas(self, user_id: int):
+        # Query otimizada usando DISTINCT ON do PostgreSQL
+        query = text("""
+            WITH ultimas_mensagens AS (
+                SELECT DISTINCT ON (
+                    CASE WHEN remetente_id = :user_id THEN destinatario_id ELSE remetente_id END
+                )
+                id, remetente_id, destinatario_id, conteudo, criado_em
+                FROM mensagens
+                WHERE remetente_id = :user_id OR destinatario_id = :user_id
+                ORDER BY 
+                    CASE WHEN remetente_id = :user_id THEN destinatario_id ELSE remetente_id END, 
+                    criado_em DESC
+            )
+            SELECT 
+                um.conteudo AS ultima_mensagem,
+                um.criado_em AS horario,
+                u.id AS contato_id,
+                u.nome AS contato_nome,
+                u.avatar_url AS contato_avatar
+            FROM ultimas_mensagens um
+            JOIN usuarios u ON u.id = (
+                CASE WHEN um.remetente_id = :user_id THEN um.destinatario_id ELSE um.remetente_id END
+            )
+            ORDER BY um.criado_em DESC;
+        """)
+        
+        result = self.db.execute(query, {"user_id": user_id})
+        return result.fetchall()
     
-
-    def listar_mensagens_da_conversa(self, db: Session, conversa_id: int):
-        stmt = (
-            select(Mensagem)
-            .filter(Mensagem.conversa_id == conversa_id)
-            .order_by(Mensagem.criado_em.asc())
-        )
-        resultado = db.execute(stmt)
-        mensagens_banco = resultado.scalars().all()
-
-        # DESCRIPTOGRAFA: Como o banco devolve o texto trancado, nós abrimos antes de mandar pro front-end
-        for msg in mensagens_banco:
-            try:
-                msg.mensagem = cipher.decrypt(msg.mensagem.encode()).decode()
-            except Exception:
-
-                # Se houver alguma mensagem antiga não criptografada no banco, ignora o erro para não quebrar o chat
-                pass
-        return mensagens_banco
-    
-
-mensagem_repository = MensagemRepository()
-
-def marcar_mensagens_como_lidas(db, conversa_id: int, usuario_id: int):
-
-    (
-        db.query(Mensagem)
-        .filter(
-            Mensagem.conversa_id == conversa_id,
-            Mensagem.remetente_id != usuario_id,
-            Mensagem.lida == False
-        )
-        .update(
-            {"lida": True},
-            synchronize_session=False
-        )
-    )
-
-    db.commit()
-
+    def buscar_lista_conversas(self, user_id: int):
+        # Query corrigida com 'seguindo_id' conforme o seu banco de dados
+        query = text("""
+            WITH ultimas_mensagens AS (
+                SELECT DISTINCT ON (
+                    CASE WHEN remetente_id = :user_id THEN destinatario_id ELSE remetente_id END
+                )
+                id, remetente_id, destinatario_id, conteudo, criado_em
+                FROM mensagens
+                WHERE remetente_id = :user_id OR destinatario_id = :user_id
+                ORDER BY 
+                    CASE WHEN remetente_id = :user_id THEN destinatario_id ELSE remetente_id END, 
+                    criado_em DESC
+            )
+            SELECT 
+                u.id AS contato_id,
+                u.nome AS contato_nome,
+                um.conteudo AS ultima_mensagem,
+                COALESCE(um.criado_em, s.criado_em) AS horario
+            FROM seguidores s
+            JOIN usuarios u ON u.id = s.seguindo_id -- ✅ Corrigido para 'seguindo_id'
+            LEFT JOIN ultimas_mensagens um ON (
+                (um.remetente_id = :user_id AND um.destinatario_id = u.id) OR
+                (um.remetente_id = u.id AND um.destinatario_id = :user_id)
+            )
+            WHERE s.seguidor_id = :user_id
+            ORDER BY horario DESC;
+        """)
+        
+        result = self.db.execute(query, {"user_id": user_id})
+        return result.fetchall()

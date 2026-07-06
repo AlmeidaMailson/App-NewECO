@@ -6,7 +6,7 @@ from app.database import Base
 from models.user import User      
 from models.post import Post            
 from models.post_interacoes import CurtidaPost, ComentarioPost, CompartilhamentoPost, PostSalvo
-from models.mensagens import Mensagem     
+from models.mensagens import Mensagem   
 from models.missoes import Missao         
 class Notificacao(Base):
     __tablename__ = "notificacoes"

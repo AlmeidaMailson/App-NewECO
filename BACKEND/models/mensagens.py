@@ -1,21 +1,12 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
-from sqlalchemy.sql import func
-from app.database import Base
+from sqlalchemy import Column, Integer, Text, DateTime
+from datetime import datetime
+from app.database import Base # Ou de onde você importa o seu Base do SQLAlchemy
 
 class Mensagem(Base):
     __tablename__ = "mensagens"
 
     id = Column(Integer, primary_key=True, index=True)
-
-    conversa_id = Column(Integer, ForeignKey("conversas.id", ondelete="CASCADE"), nullable=False)
-
-    remetente_id = Column(Integer, ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False) 
-    
-    mensagem = Column(String, nullable=False)
-    
-    lida = Column(Boolean, nullable=False, default=False)
-    
-    criado_em = Column(DateTime(timezone=True), server_default=func.now())
-
-
-  
+    remetente_id = Column(Integer, nullable=False)
+    destinatario_id = Column(Integer, nullable=False)
+    conteudo = Column(Text, nullable=False) # Aqui vai salvar o texto criptografado
+    criado_em = Column(DateTime, default=datetime.utcnow)

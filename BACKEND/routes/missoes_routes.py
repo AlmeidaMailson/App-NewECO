@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.database import SessionLocal  # Import oficial que usámos
+from app.database import SessionLocal 
 from Service.missoes_automacao_service import missoes_automacao_service
 
 # Imports corretos e padronizados conforme solicitado

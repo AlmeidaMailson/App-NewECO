@@ -43,9 +43,9 @@ export type RootStackParamList = {
   TelaEcoBeneficios: undefined;
   TelaMissoes: undefined;
   FinalizarPublicacao: { midia: any };
-  TelaConversa: undefined;   
+  TelaConversa: undefined; 
   MapaVerde: undefined;
-  TelaMensagens: undefined;
+  TelaMensagens:  { contatoId: number; contatoNome: string };
 };
 
 const stack = createNativeStackNavigator<RootStackParamList>();

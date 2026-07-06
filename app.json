@@ -4,7 +4,7 @@
     "slug": "NewEco",
     "version": "1.0.0",
     "android": {
-      "package": "com.anonymous.NewEco",
+      "package": "com.mailson.neweco",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyB_U6wfcObSRIZSWa4OrTbLe9vmby8VXno"
@@ -14,7 +14,9 @@
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
         "READ_MEDIA_IMAGES",
-        "READ_MEDIA_VIDEO"
+        "READ_MEDIA_VIDEO",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
     "ios": {
@@ -28,8 +30,12 @@
       "expo-audio",
       "expo-font",
       "expo-asset",
-      "expo-secure-store",
-      "@react-native-firebase/app"
-    ]
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "19220445-f971-4a31-9048-460084bfeb24"
+      }
+    }
   }
 }

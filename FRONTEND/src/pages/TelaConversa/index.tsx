@@ -1,181 +1,84 @@
-import React, { useState, useRef } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../routes";
+import api from '../../config/api'; 
 
-import { Ionicons } from "@expo/vector-icons";
-import {
-  useRoute,
-  useFocusEffect,
-  useNavigation,
-} from "@react-navigation/native";
+export const theme = {
+  colors: {
+    primaryLight: "#00B89A",
+    primaryDark: "#005244",
+    background: "#FFFFFF",
+    textLight: "#F0F0F0",
+    textDark: "#000000",
+    button: "#0984E3",
+  },
+};
 
-import { useEffect } from "react";
-
-import api from "../../config/api";
-import { styles } from "./style";
-import { theme } from "../../global/themes";
-import UserSession from "../../utils/UserSessions";
-
-interface Mensagem {
-  id: number;
-  remetente_id: number;
-  conversa_id: number;
-  mensagem: string;
-  criado_em: string;
-  lida: boolean;
+interface Conversa {
+  contato_id: number;
+  contato_nome: string;
+  ultima_mensagem: string;
+  horario: string;
 }
 
-export default function TelaConversa() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
+export default function ConversasScreen() {
+  const [conversas, setConversas] = useState<Conversa[]>([]);
+  // Usando o hook para garantir a estabilidade da rota
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const { conversaId, usuario } = route.params;
-
-  const [mensagens, setMensagens] = useState<Mensagem[]>([]);
-  const [texto, setTexto] = useState("");
-
-  const flatListRef = useRef<FlatList>(null);
-
-  const usuarioLogado = UserSession.getInstance().getUser()?.id;
-
-  useFocusEffect(
-    React.useCallback(() => {
-      carregarMensagens();
-    }, []),
-  );
-
-  //   Atualizar automaticamente
   useEffect(() => {
-    const intervalo = setInterval(() => {
-      carregarMensagens();
-    }, 2000);
-
-    return () => clearInterval(intervalo);
+    api.get("/chat/conversas")
+      .then(res => setConversas(res.data))
+      .catch(err => console.error("Erro ao buscar conversas:", err));
   }, []);
 
-  async function carregarMensagens() {
-    try {
-      const response = await api.get(`/mensagens/${conversaId}`);
-
-      //   Não atualizar sem necessidade
-      //   tela só renderiza novamente quando realmente houver mensagens novas.
-      setMensagens((mensagensAtuais) => {
-        if (JSON.stringify(mensagensAtuais) === JSON.stringify(response.data)) {
-          return mensagensAtuais;
-        }
-
-        return response.data;
-      });
-
-      if (response.data.length !== mensagens.length) {
-        setTimeout(() => {
-          flatListRef.current?.scrollToEnd({
-            animated: true,
-          });
-        }, 200);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function enviarMensagem() {
-    if (texto.trim() === "") return;
-
-    try {
-      await api.post("/mensagens", {
-        conversa_id: conversaId,
-        mensagem: texto,
-      });
-
-      setTexto("");
-
-      carregarMensagens();
-    } catch (error: any) {
-      console.log(error.response?.data || error.message);
-    }
-  }
-
-  function renderMensagem({ item }: { item: Mensagem }) {
-    const minhaMensagem = item.remetente_id === usuarioLogado;
-
-    return (
-      <View
-        style={[styles.balao, minhaMensagem ? styles.direita : styles.esquerda]}
-      >
-        <Text style={styles.texto}>{item.mensagem}</Text>
-
-        <Text style={styles.horario}>
-          {new Date(item.criado_em).toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+  const renderItem = ({ item }: { item: Conversa }) => (
+    <TouchableOpacity 
+      style={styles.conversaCard}
+      // Navegando para o Chat Ativo mapeado no seu Routes.tsx
+      onPress={() => navigation.navigate('TelaMensagens', { 
+        contatoId: item.contato_id, 
+        contatoNome: item.contato_nome 
+      })}
+    >
+      <View style={styles.infoContainer}>
+        <View style={styles.headerRow}>
+          <Text style={styles.nomeText}>{item.contato_nome}</Text>
+          <Text style={styles.tempoText}>{item.horario}</Text>
+        </View>
+        <Text numberOfLines={1} style={styles.ultimaMensagemText}>
+          {item.ultima_mensagem}
         </Text>
       </View>
-    );
-  }
+    </TouchableOpacity>
+  );
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      {/* Cabeçalho */}
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons
-            name="arrow-back"
-            size={26}
-            color={theme.colors.primaryDark}
-          />
-        </TouchableOpacity>
-
-        <Ionicons
-          name="person-circle"
-          size={50}
-          color={theme.colors.primaryDark}
-          style={{ marginLeft: 10 }}
-        />
-
-        <Text style={styles.nome}>{usuario.nome}</Text>
+        <Text style={styles.headerTitle}>Mensagens</Text>
       </View>
-
-      {/* Lista de mensagens */}
       <FlatList
-        ref={flatListRef}
-        data={mensagens}
-        renderItem={renderMensagem}
-        keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={styles.lista}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        onContentSizeChange={() =>
-          flatListRef.current?.scrollToEnd({
-            animated: true,
-          })
-        }
+        data={conversas}
+        keyExtractor={(item) => item.contato_id.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={styles.listContainer}
       />
-
-      {/* Rodapé */}
-      <View style={styles.footer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite uma mensagem..."
-          value={texto}
-          onChangeText={setTexto}
-        />
-
-        <TouchableOpacity style={styles.botao} onPress={enviarMensagem}>
-          <Ionicons name="send" size={24} color="#FFF" />
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: theme.colors.background },
+  header: { backgroundColor: theme.colors.primaryDark, padding: 20, alignItems: 'center' },
+  headerTitle: { color: theme.colors.textLight, fontSize: 20, fontWeight: 'bold' },
+  listContainer: { paddingHorizontal: 16 },
+  conversaCard: { paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#EBEBEB' },
+  infoContainer: { flex: 1 },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
+  nomeText: { fontSize: 16, fontWeight: '600', color: theme.colors.textDark },
+  tempoText: { fontSize: 12, color: '#888' },
+  ultimaMensagemText: { fontSize: 14, color: '#666' },
+});
