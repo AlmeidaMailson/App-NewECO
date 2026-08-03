@@ -92,6 +92,7 @@ export default function TelaPerfil() {
         <Text style={styles.name}>{user?.nome ?? "Usuário NewEco"}</Text>
         <Text style={styles.email}>{user?.email ?? ""}</Text>
 
+
         {/* SOCIAL STATS */}
         <View style={styles.socialStats}>
           <View style={styles.socialItem}>

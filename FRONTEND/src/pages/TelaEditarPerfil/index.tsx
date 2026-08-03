@@ -107,13 +107,6 @@ export default function TelaEditarPerfil() {
         contentContainerStyle={style.scroll}
         showsVerticalScrollIndicator={false}
       >
-        {/* AVATAR BOX */}
-        <View style={style.imageContainer}>
-          <ProfileImage
-    imageUri={avatarUri}
-    onImageSelected={setAvatarUri}
-/>
-        </View>
 
         {/* INPUTS DO FORMULÁRIO */}
         <View style={style.form}>

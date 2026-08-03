@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-export const API_URL = "http://localhost:8000"; // ou "http://192.168.1.X:8000" para teste em rede local
+export const API_URL = "https://comment-geologist-image.ngrok-free.dev" ; // ou "http://192.168.1.X:8000" para teste em rede local
 
 //  Cria a instância do Axios usando a sua API_URL
 const api = axios.create({

@@ -45,21 +45,20 @@ export type RootStackParamList = {
   FinalizarPublicacao: { midia: any };
   TelaConversa: undefined; 
   MapaVerde: undefined;
-  TelaMensagens:  { contatoId: number; contatoNome: string };
+  TelaMensagens: { contatoId: number; contatoNome: string };
 };
 
-const stack = createNativeStackNavigator<RootStackParamList>();
+// Alterado para "Stack" com inicial maiúscula para seguir a convenção de Componentes do React
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Routes() {
   const [loading, setLoading] = useState(true);
   const [hasSession, setHasSession] = useState(false);
 
-  // CORREÇÃO: Hook para restaurar a sessão do usuário assim que o app abrir
   useEffect(() => {
     async function checkActiveSession() {
       try {
         const session = UserSession.getInstance();
-        // Carrega os dados salvos no AsyncStorage para a memória RAM
         const isLogged = await session.loadStoredSession();
         setHasSession(isLogged);
       } catch (error) {
@@ -72,7 +71,6 @@ export default function Routes() {
     checkActiveSession();
   }, []);
 
-  // Splash screen/Loading nativo enquanto lê o armazenamento local
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#121212" }}>
@@ -83,32 +81,30 @@ export default function Routes() {
 
   return (
     <NavigationContainer>
-      {/* O PULO DO GATO: Define a rota inicial dinamicamente com base na sessão */}
-      <stack.Navigator 
+      <Stack.Navigator 
         initialRouteName={hasSession ? "TelaHome" : "Login"} 
         screenOptions={{ headerShown: false }}
       >
-        <stack.Screen name="Login" component={Login} />
-        <stack.Screen name="TelaEsqueceSenha" component={TelaEsqueceSenha} />
-        <stack.Screen name="Cadastro" component={Cadastro} />
-        <stack.Screen name="TelaHome" component={TelaHome} />
-        <stack.Screen name="TelaNotificacao" component={TelaNotificacao} />
-        <stack.Screen name="Publicar" component={Publicar} />
-        <stack.Screen name="TelaPerfil" component={TelaPerfil} />
-        <stack.Screen name="TelaEditarPerfil" component={TelaEditarPerfil} />
-        <stack.Screen name="TelaConfiguracao" component={TelaConfiguracao} />
-        <stack.Screen name="TelaPrivacidade" component={TelaPrivacidade} />
-        <stack.Screen name="TelaSeguranca" component={TelaSeguranca} />
-        <stack.Screen name="TelaAdicionarUsuario" component={TelaAdicionarUsuario} />
-        <stack.Screen name="TelaPerfilUsuario" component={TelaPerfilUsuario} />
-        <stack.Screen name="TelaEcoBeneficios" component={TelaEcoBeneficios} />
-        <stack.Screen name="MapaVerde" component={MapaVerde} />
-        <stack.Screen name="TelaMissoes" component={TelaMissoes} />
-        <stack.Screen name="FinalizarPublicacao" component={FinalizarPublicacao} />
-        <stack.Screen name="TelaMensagens" component={TelaMensagens}/>
-        <stack.Screen name="TelaConversa" component={TelaConversa}/>
-
-      </stack.Navigator>
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="TelaEsqueceSenha" component={TelaEsqueceSenha} />
+        <Stack.Screen name="Cadastro" component={Cadastro} />
+        <Stack.Screen name="TelaHome" component={TelaHome} />
+        <Stack.Screen name="TelaNotificacao" component={TelaNotificacao} />
+        <Stack.Screen name="Publicar" component={Publicar} />
+        <Stack.Screen name="TelaPerfil" component={TelaPerfil} />
+        <Stack.Screen name="TelaEditarPerfil" component={TelaEditarPerfil} />
+        <Stack.Screen name="TelaConfiguracao" component={TelaConfiguracao} />
+        <Stack.Screen name="TelaPrivacidade" component={TelaPrivacidade} />
+        <Stack.Screen name="TelaSeguranca" component={TelaSeguranca} />
+        <Stack.Screen name="TelaAdicionarUsuario" component={TelaAdicionarUsuario} />
+        <Stack.Screen name="TelaPerfilUsuario" component={TelaPerfilUsuario} />
+        <Stack.Screen name="TelaEcoBeneficios" component={TelaEcoBeneficios} />
+        <Stack.Screen name="MapaVerde" component={MapaVerde} />
+        <Stack.Screen name="TelaMissoes" component={TelaMissoes} />
+        <Stack.Screen name="FinalizarPublicacao" component={FinalizarPublicacao} />
+        <Stack.Screen name="TelaMensagens" component={TelaMensagens} />
+        <Stack.Screen name="TelaConversa" component={TelaConversa} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
