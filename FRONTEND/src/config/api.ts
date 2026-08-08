@@ -1,9 +1,10 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-export const API_URL = "https://comment-geologist-image.ngrok-free.dev" ; // ou "http://192.168.1.X:8000" para teste em rede local
+// 🎯 IP do seu WSL2 no protocolo HTTP (Sem o 's' no https)
+export const API_URL = "http://172.28.235.169:8000"; 
 
-//  Cria a instância do Axios usando a sua API_URL
+// Cria a instância do Axios usando a sua API_URL
 const api = axios.create({
   baseURL: API_URL,
 });
