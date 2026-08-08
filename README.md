@@ -7,29 +7,24 @@ O NewEco Link é uma solução tecnológica que visa conectar cidadãos, empresa
 
 ## Tecnologias e Ferramentas
 - **Framework:** React Native (Expo)
-- **Linguagem:** JavaScript (ES6+)
+- **Linguagem:** JavaScript (ES6+) e Python
+- **Backend:** FastAPI
+- **Banco de Dados:** PostgreSQL
 - **Estilização:** Styled Components / CSS-in-JS
-- **Prototipagem:** Figma
 - **Ambiente:** VS Code & Android Studio (Depuração via Wi-Fi/ADB)
-
-## Arquitetura e Padrões de Projeto
-O projeto foi estruturado seguindo os princípios de **Programação Orientada a Objetos (POO)** e padrões de projeto para garantir escalabilidade:
-- **Singleton:** Gerenciamento centralizado de sessão e dados de usuário.
-- **Observer:** Sistema de notificações em tempo real para doações e alertas ambientais.
-- **Factory:** Padronização na criação de objetos dentro do módulo de Chatbot.
-- **Engenharia de Usabilidade:** Interface validada através das 10 Heurísticas de Nielsen.
-
-## Estrutura de Pastas
-- `/src/components`: Componentes reutilizáveis (botões, cards, inputs).
-- `/src/pages`: Telas principais da aplicação (Login, Home, Perfil).
-- `/src/assets`: Imagens e ícones.
-- `/src/models`: Classes e entidades (POO).
 
 ##  Como executar
 1. Clone o repositório: `git clone https://github.com/AlmeidaMailson/App-NewECO.git`
 2. Instale as dependências: `npm install`
 3. Inicie o projeto: `npx expo start`
-
-## Design e Prototipagem
-O design da interface e a experiência do utilizador (UI/UX) foram planeados no Figma.
-- **Protótipo Interativo:** [Aceder ao projeto no Figma](https://www.figma.com/design/f0FvveAZIsXw3lN258nned/NewEco-Link?node-id=0-1&t=VQOO6ESOTWBbHbKb-1)
+## Para conexão do banco dados
+1. No arquivo api.ts a linha 05 é a responsável pela a comunicação do front com backend(API), se você estiver usando um celular para rodar o app recomendo usar o localhost:800, se não usa o ip que a maquina recomenda com a porta:8000
+2. abro terminal do VsCode:
+   1.  digite cd BACKEND
+   2.  digite .venv/bin/activate
+   3.  digite pip install -r requirements.txt
+   4.  digite uvicorn app.main:app --reload
+  
+      
+   **Observação:** Esse código trabalha com WSL2(ubuntu no windows) e Docker Desktop. Os Passos dados acima são para quem não usa esse tipo de Ferramentas
+   
