@@ -1,6 +1,6 @@
 #  NewEco Link - Mobile App
 
-**Status:  Em Desenvolvimento** Projeto Integrador focado em Economia Circular e Sustentabilidade, desenvolvido com **React Native**.
+**Status:  Em Desenvolvimento** Projeto focado em Economia Circular e Sustentabilidade, desenvolvido com **React Native**.
 
 ## Sobre o Projeto
 O NewEco Link é uma solução tecnológica que visa conectar cidadãos, empresas e ONGs para promover o descarte correto e a reutilização de materiais. O projeto utiliza Inteligência Artificial e Geolocalização para facilitar a jornada sustentável do usuário.
